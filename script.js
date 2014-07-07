@@ -33,6 +33,7 @@ function stripCmdTextInputKeyUp(cmdPos) {
 	if (event.keyCode == 13) { $("#" + cmdPosPrefix + "sendOneCmdBtn").click(); }
 }
 
+/*
 function setOpMode() {
 	// 0xAA => 170 	// Note: needs to be set as Integer (not as Hex)
 	$.get("sendpkt2ard.php", {
@@ -41,6 +42,7 @@ function setOpMode() {
 		$("#result").html(data);
 	});
 }
+*/
 
 function oecmSubmit() {
 	// oecm => Outside External Ctrl Mode
@@ -295,6 +297,18 @@ function cmdTypeDDChanged(dd, cmdPos) {
 		$("#" + cmdPosPrefix + "div").html(data);
 	});
 
+}
+
+function opModeDDChanged() {
+	var newOpMode = (($("#opModeOutsideDD").val() & 0x0F) << 4) + ($("#opModeInsideDD").val() & 0x0F);
+	//alert("newOpMode: " + newOpMode);
+	
+	// 0xAA => 170 	// Note: needs to be set as Integer (not as Hex)
+	$.get("sendpkt2ard.php", {
+		packet: "170," + newOpMode
+	}, function (data) {
+		$("#result").html(data);
+	});
 }
 
 function updateCbArr(cmdPos) {

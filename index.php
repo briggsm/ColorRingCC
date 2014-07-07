@@ -15,19 +15,48 @@
 	?>
 
 	<h3>OpMode</h3>
-	<p>
-		0 = Outside Internal, Inside Internal<br />
-		1 = Outside Internal, Inside External<br />
-		2 = Outside External, Inside Internal<br />
-		3 = Outside External, Inside External<br />
-	</p>
 	<?php
 	$opMode = getVarFromColorRing("opMode");
 	//echo "opMode is: " . $opMode . "<br />";
+	$opModeOutside = ($opMode & 0xF0) >> 4;
+	$opModeInside = $opMode & 0x0F;
 	?>
-	<!--input type="text" id="opModeText" value="<?php //echo $opMode; ?>" onkeyup="checkKeyUpOpMode(event)" /-->
-	<input type="text" id="opModeText" value="<?php echo $opMode; ?>" onkeyup="ifEnterClickBtn(event, 'opModeBtn')" />
-	<input type="button" id="opModeBtn" value="Set Mode" onClick="setOpMode()" /><br />
+	<table border=1>
+		<tr>
+			<th>Outside Strip</th>
+			<th>Inside Strip</th>
+		<tr>
+			<td>
+				<select id="opModeOutsideDD" onChange="opModeDDChanged()">
+					<?php $sel = $opModeOutside == 0 ? "selected" : ""; ?>
+					<option value=0 <?php echo $sel; ?>>Internal</option>
+					<?php $sel = $opModeOutside == 1 ? "selected" : ""; ?>
+					<option value=1 <?php echo $sel; ?>>External</option>
+					<?php $sel = $opModeOutside == 2 ? "selected" : ""; ?>
+					<option value=2 <?php echo $sel; ?>>Clock (not implemented yet)</option>
+					<?php $sel = $opModeOutside == 3 ? "selected" : ""; ?>
+					<option value=3 <?php echo $sel; ?>>White 5's (not implemented yet)</option>
+				</select>
+			</td>
+			<td>
+				<select id="opModeInsideDD" onChange="opModeDDChanged()">
+					<?php $sel = $opModeInside == 0 ? "selected" : ""; ?>
+					<option value=0 <?php echo $sel; ?>>Internal</option>
+					<?php $sel = $opModeInside == 1 ? "selected" : ""; ?>
+					<option value=1 <?php echo $sel; ?>>External</option>
+					<?php $sel = $opModeInside == 2 ? "selected" : ""; ?>
+					<option value=2 <?php echo $sel; ?>>Clock (not implemented yet)</option>
+					<?php $sel = $opModeInside == 3 ? "selected" : ""; ?>
+					<option value=3 <?php echo $sel; ?>>White 5's (not implemented yet)</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+	
+	<!--input type="text" id="opModeText" value="<?php echo $opMode; ?>" onkeyup="ifEnterClickBtn(event, 'opModeBtn')" />
+	<input type="button" id="opModeBtn" value="Set Mode" onClick="setOpMode()" /><br /-->
+	
+	
 	
 	<h3>Out External Ctrl Mode (oecm)</h3>
 	<p>
@@ -94,6 +123,9 @@
 	</table>
 	
 	<h3>All Cmds</h3>
+	<p>First half = Outside Strip Cmds<br />
+		Second half = Inside Strip Cmds
+	</p>
 	<table border=1>
 		<?php
 		$maxNumStripCmds = getVarFromColorRing("maxNumStripCmds");
@@ -140,8 +172,8 @@
 				echo '<option value="none" ' . $sel . '>None</option>';
 				$sel = $cmdType == 0 ? "selected" : "";
 				echo '<option value="ssp" ' . $sel . '>Set Sequential Pixels</option>';
-				$sel = $cmdType == 1 ? "selected" : "";
-				echo '<option value="bcg" ' . $sel . '>Build Color Gradient</option>';
+				//$sel = $cmdType == 1 ? "selected" : "";
+				//echo '<option value="bcg" ' . $sel . '>Build Color Gradient</option>';
 				$sel = $cmdType == 2 ? "selected" : "";
 				echo '<option value="shift" ' . $sel . '>Shift</option>';
 				$sel = $cmdType == 3 ? "selected" : "";
