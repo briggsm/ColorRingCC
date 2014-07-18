@@ -18,6 +18,9 @@
 	accompanying COPYING file
 */
 
+define("OUT_COLORED5S_COLOR", 0);
+define("IN_COLORED5S_COLOR", 1);
+
 function getCmdTable ($cmdBytes, $cmdPos) {
 	// Note: assumes $cmdBytes are all in INTEGER format!
 	
@@ -269,11 +272,11 @@ function getTimestamp() {
 }
 
 function getVarFromColorRing($varRequest) {
-	$target = "192.168.5.85";
-	$service_url = $target . '/' . $varRequest;
-	//echo "service_url: " . $service_url . "<br />";
+	global $colorringIP;
+	$target = $colorringIP;
+	$request_url = $target . '/' . $varRequest;
 	
-	$curl = curl_init($service_url);
+	$curl = curl_init($request_url);
 	curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4 ); 
 	curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);  // was 0.5
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
@@ -287,6 +290,28 @@ function getVarFromColorRing($varRequest) {
 	$val = $jsonA[$varRequest];
 	
 	return $val;
+}
+
+function getByteArrayFromColorRing($fnName, $fnParamsStr) {
+	global $colorringIP;
+	$target = $colorringIP;
+	$request_url = $target . '/' . $fnName . '?params=' . $fnParamsStr;
+	
+	$curl = curl_init($request_url);
+	curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4 ); 
+	curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);  // was 0.5
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+	$curl_response = curl_exec($curl);
+	curl_close($curl);
+
+	$jsonB = json_decode($curl_response, true);
+	//echo "jsonB: "; print_r($jsonB);
+	//$cmdBytesStr = $jsonB["name"];
+	$byteArrayStr = $jsonB["name"];
+	//echo "cmdBytesStr: " . $cmdBytesStr;
+	$byteArray = explode(",", $byteArrayStr);
+	
+	return $byteArray;
 }
 
 ?>
