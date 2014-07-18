@@ -64,6 +64,34 @@ function iecmSubmit() {
 	});
 }
 
+function outColored5sColorSubmit() {
+	// 0xBD => 189
+	var colorStr = "";
+	colorStr += "0x" + $("#outColored5sColor").attr('value').substring(0,2) + ",";   // R
+	colorStr += "0x" + $("#outColored5sColor").attr('value').substring(2,4) + ",";   // G
+	colorStr += "0x" + $("#outColored5sColor").attr('value').substring(4,6);		  // B
+
+	$.get("sendpkt2ard.php", {
+		packet: "189," + colorStr
+	}, function (data) {
+		$("#result").html(data);
+	});
+}
+
+function inColored5sColorSubmit() {
+	// 0xBE => 190
+	var colorStr = "";
+	colorStr += "0x" + $("#inColored5sColor").attr('value').substring(0,2) + ",";   // R
+	colorStr += "0x" + $("#inColored5sColor").attr('value').substring(2,4) + ",";   // G
+	colorStr += "0x" + $("#inColored5sColor").attr('value').substring(4,6);		  	// B
+
+	$.get("sendpkt2ard.php", {
+		packet: "190," + colorStr
+	}, function (data) {
+		$("#result").html(data);
+	});
+}
+
 function maxNumStripCmdsSubmit() {
 	// Send a varRequest (variable request)
 	$.get("sendpkt2ard.php", {
@@ -347,14 +375,7 @@ function initEcmColorPicker(id, isOutside) {
 	});
 }
 
-function initStripCmdColorPicker(cmdPos, id) {
-	
-	var cmdPosPrefix = getCmdPosPrefix(cmdPos);
-	var elem = $("#" + cmdPosPrefix + id);
-	
-	//alert("function: initStripCmdColorPicker(). color: #" + elem.attr('value') + ", elemStr: " + "#" + cmdPosPrefix + id);
-	//alert("color: #" + elem.attr('value'));
-	
+function initFullColorPicker(elem, changeFn) {
 	if (elem.length) {  // if exists
 		elem.spectrum({
 			//color: "#" + elem.val(),
@@ -364,13 +385,33 @@ function initStripCmdColorPicker(cmdPos, id) {
 		    showInput: true,
 			preferredFormat: "hex",
 			clickoutFiresChange: true,
-			change: function(color) {
-				elem.attr('value', color.toHexString().substring(1,7));
-				updateCbArr(cmdPos);
-				$("#" + cmdPosPrefix + "sendOneCmdBtn").click();  // send cmd to ColorRing
-			}
+			change: changeFn
 		});
 	}
+}
+
+function initStripCmdColorPicker(cmdPos, id) {
+	var cmdPosPrefix = getCmdPosPrefix(cmdPos);
+	var elem = $("#" + cmdPosPrefix + id);
+	
+	var changeFn = function(color) {
+		elem.attr('value', color.toHexString().substring(1,7));
+		updateCbArr(cmdPos);
+		$("#" + cmdPosPrefix + "sendOneCmdBtn").click();  // send cmd to ColorRing
+	}
+	
+	initFullColorPicker(elem, changeFn);
+}
+
+function initColored5sColorPicker(id) {
+	var elem = $("#" + id);
+	
+	var changeFn = function(color) {
+		elem.attr('value', color.toHexString().substring(1,7));
+		$("#" + id + "Btn").click();
+	}
+	
+	initFullColorPicker(elem, changeFn);
 }
 
 // === document ready ===

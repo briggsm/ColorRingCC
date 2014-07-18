@@ -11,6 +11,7 @@
 
 <body>
 	<?php
+	include "ColorRingConnectionInfo.php";
 	include "functions.php";
 	?>
 
@@ -35,7 +36,7 @@
 					<?php $sel = $opModeOutside == 2 ? "selected" : ""; ?>
 					<option value=2 <?php echo $sel; ?>>Clock (not implemented yet)</option>
 					<?php $sel = $opModeOutside == 3 ? "selected" : ""; ?>
-					<option value=3 <?php echo $sel; ?>>White 5's (not implemented yet)</option>
+					<option value=3 <?php echo $sel; ?>>Colored 5's</option>
 				</select>
 			</td>
 			<td>
@@ -47,7 +48,7 @@
 					<?php $sel = $opModeInside == 2 ? "selected" : ""; ?>
 					<option value=2 <?php echo $sel; ?>>Clock (not implemented yet)</option>
 					<?php $sel = $opModeInside == 3 ? "selected" : ""; ?>
-					<option value=3 <?php echo $sel; ?>>White 5's (not implemented yet)</option>
+					<option value=3 <?php echo $sel; ?>>Colored 5's</option>
 				</select>
 			</td>
 		</tr>
@@ -58,7 +59,7 @@
 	
 	
 	
-	<h3>Out External Ctrl Mode (oecm)</h3>
+	<h3>Outside External Ctrl Mode (oecm)</h3>
 	<p>
 		<strong>Mode</strong><br />
 		0 = Strip Color<br />
@@ -76,7 +77,7 @@
 		</tr>
 	</table>
 	
-	<h3>In External Ctrl Mode (iecm)</h3>
+	<h3>Inside External Ctrl Mode (iecm)</h3>
 	<table border=1>
 		<tr>
 			<th>Mode</th> <th>Speed (if Flow)</th> <th>Num Sections (if Flow)</th>
@@ -107,6 +108,32 @@
 			<script>
 				initEcmColorPicker('iecmStripColor', 0);  // 0 => Inside
 			</script>
+		</tr>
+	</table>
+	
+	<h3>Outside Colored 5's</h3>
+	<?php
+	$paramsStr = "" . OUT_COLORED5S_COLOR;
+	$colorBA = getByteArrayFromColorRing("setHackNameToColor", $paramsStr);
+	?>
+	<table border=1>
+		<tr>
+			<td><input id="outColored5sColor" value="<?php echo sprintf("%02X", intval($colorBA[0], 0)) . sprintf("%02X", intval($colorBA[1], 0)) . sprintf("%02X", intval($colorBA[2], 0)) ?>" /></td>
+			<script>initColored5sColorPicker("outColored5sColor");</script>
+			<td><input type="button" id="outColored5sColorBtn" value="Submit" onClick="outColored5sColorSubmit()" /></td>
+		</tr>
+	</table>
+	
+	<h3>Inside Colored 5's</h3>
+	<?php
+	$paramsStr = "" . IN_COLORED5S_COLOR;
+	$colorBA = getByteArrayFromColorRing("setHackNameToColor", $paramsStr);
+	?>
+	<table border=1>
+		<tr>
+			<td><input id="inColored5sColor" value="<?php echo sprintf("%02X", intval($colorBA[0], 0)) . sprintf("%02X", intval($colorBA[1], 0)) . sprintf("%02X", intval($colorBA[2], 0)) ?>" /></td>
+			<script>initColored5sColorPicker("inColored5sColor");</script>
+			<td><input type="button" id="inColored5sColorBtn" value="Submit" onClick="inColored5sColorSubmit()" /></td>
 		</tr>
 	</table>
 
@@ -140,22 +167,35 @@
 			<tr><td>
 
 				<?php
-				$target = "192.168.5.85";
-				$service_url = $target . '/setHackNameToCmd?params=' . $cmdPos;
+				/*
+				//$target = "192.168.5.85";
+				$target = $colorringIP;
+				
+				$request_url = $target . '/setHackNameToCmd?params=' . $cmdPos;
+				*/
+				
 			
-				$curl = curl_init($service_url);
+				//$cmdBytes = getRemoteByteArray($request_url);
+				$paramsStr = $cmdPos;
+				$cmdBytes = getByteArrayFromColorRing("setHackNameToCmd", $paramsStr);
+			
+			
+				/*
+				$curl = curl_init($request_url);
 				curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4 ); 
 				curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);  // was 0.5
 				curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 				$curl_response = curl_exec($curl);
 				curl_close($curl);
 			
-			
 				$jsonB = json_decode($curl_response, true);
 				//echo "jsonB: "; print_r($jsonB);
 				$cmdBytesStr = $jsonB["name"];
 				//echo "cmdBytesStr: " . $cmdBytesStr;
 				$cmdBytes = explode(",", $cmdBytesStr);
+				*/
+				
+				
 				$cmdType = $cmdBytes[0];
 			
 				//echo "cmdBytes: <br />";
