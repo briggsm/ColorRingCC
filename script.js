@@ -66,13 +66,15 @@ function iecmSubmit() {
 
 function outColored5sColorSubmit() {
 	// 0xBD => 189
+	/*
 	var colorStr = "";
 	colorStr += "0x" + $("#outColored5sColor").attr('value').substring(0,2) + ",";   // R
 	colorStr += "0x" + $("#outColored5sColor").attr('value').substring(2,4) + ",";   // G
 	colorStr += "0x" + $("#outColored5sColor").attr('value').substring(4,6);		  // B
+	*/
 
 	$.get("sendpkt2ard.php", {
-		packet: "189," + colorStr
+		packet: "189," + getColorStrCSV("outColored5sColor")
 	}, function (data) {
 		$("#result").html(data);
 	});
@@ -80,13 +82,16 @@ function outColored5sColorSubmit() {
 
 function inColored5sColorSubmit() {
 	// 0xBE => 190
+	/*
 	var colorStr = "";
 	colorStr += "0x" + $("#inColored5sColor").attr('value').substring(0,2) + ",";   // R
 	colorStr += "0x" + $("#inColored5sColor").attr('value').substring(2,4) + ",";   // G
 	colorStr += "0x" + $("#inColored5sColor").attr('value').substring(4,6);		  	// B
+	*/
+	//var colorStr = getColorStrCSV("inColored5sColor");
 
 	$.get("sendpkt2ard.php", {
-		packet: "190," + colorStr
+		packet: "190," + getColorStrCSV("inColored5sColor")
 	}, function (data) {
 		$("#result").html(data);
 	});
@@ -132,6 +137,14 @@ function maxStripCmdSizeSubmit() {
 	});
 }
 
+function dumpEepromSmSubmit() {
+	$.get("sendpkt2ard.php", {
+		packet: "144"
+	}, function (data) {
+		$("#result").html(data);
+	});
+}
+
 function sendOneCmdSubmit(cmdPos) {
 	var cmdBytesStr = getCmdBytes(cmdPos);
 	//alert ("cmdBytes: " + cmdBytes);
@@ -167,6 +180,96 @@ jQuery.fn.redraw = function() {
     });
 };
 */
+
+function useNtpServerSubmit() {
+	// 0xC0 => 192
+	var chkdStr = $("#useNtpServerCB").is(":checked") ? "1" : "0";
+	
+	$.get("sendpkt2ard.php", {
+		packet: "192," + chkdStr
+	}, function (data) {
+		$("#result").html(data);
+	});
+}
+
+function tzAdjSubmit() {
+	// 0xC2 => 194
+	$.get("sendpkt2ard.php", {
+		packet: "194," + $("#tzAdj").val()
+	}, function (data) {
+		$("#result").html(data);
+	});
+}
+
+function isDstSubmit() {
+	// 0xC3 => 195
+	var chkdStr = $("#isDstCB").is(":checked") ? "1" : "0";
+	
+	$.get("sendpkt2ard.php", {
+		packet: "195," + chkdStr
+	}, function (data) {
+		$("#result").html(data);
+	});
+}
+
+function setTimeSubmit() {
+	// 0xC1 => 193
+	$.get("sendpkt2ard.php", {
+		packet: "193," + $("#timeHours").val() + "," + $("#timeMinutes").val() + "," + $("#timeSeconds").val()
+	}, function (data) {
+		$("#result").html(data);
+	});
+}
+
+function handPropsSubmit() {
+	// 0xC4 => 196 (Hand Sizes)
+	// 0xC5 => 197 (Hand Colors)
+	
+	// Hand Sizes
+	$.get("sendpkt2ard.php", {
+		packet: "196," + $("#hourHandSize").val() + "," + $("#minHandSize").val() + "," + $("#secHandSize").val()
+	}, function (data) {
+		$("#result").html(data);
+	});
+	
+	// Hand Colors
+	/*
+	var colorStrH = getColorStrCSV("hourHandColor");
+	var colorStrM = getColorStrCSV("minHandColor");
+	var colorStrS = getColorStrCSV("secHandColor");
+	*/
+	
+	/*
+	var colorStr = "";
+	colorStr += "0x" + $("#hourHandColor").attr('value').substring(0,2) + ",";   // R
+	colorStr += "0x" + $("#hourHandColor").attr('value').substring(2,4) + ",";   // G
+	colorStr += "0x" + $("#hourHandColor").attr('value').substring(4,6);		 // B
+	*/
+	
+	$.get("sendpkt2ard.php", {
+		packet: "197," + getColorStrCSV("hourHandColor") + "," + getColorStrCSV("minHandColor") + "," + getColorStrCSV("secHandColor")
+	}, function (data) {
+		$("#result").html(data);
+	});
+}
+
+function dispClockHandOutInSubmit() {
+	// 0xC6 => 198
+	var hourOut = $("#dispHourHandOutCB").is(":checked") ? "1" : "0";
+	var hourIn = $("#dispHourHandInCB").is(":checked") ? "1" : "0";
+	var minOut = $("#dispMinHandOutCB").is(":checked") ? "1" : "0";
+	var minIn = $("#dispMinHandInCB").is(":checked") ? "1" : "0";
+	var secOut = $("#dispSecHandOutCB").is(":checked") ? "1" : "0";
+	var secIn = $("#dispSecHandInCB").is(":checked") ? "1" : "0";
+	
+	$.get("sendpkt2ard.php", {
+		packet: "198," + hourOut + "," + hourIn + "," + minOut + "," + minIn + "," + secOut + "," + secIn
+	}, function (data) {
+		$("#result").html(data);
+	});
+}
+
+
 
 function getCmdPosPrefix(cmdPos) {
 	return "cmdPos" + pad(cmdPos, 3);
@@ -213,9 +316,12 @@ function getCmdBytes(cmdPos) {
 		
 		cmdBytes += $("#" + cmdPosPrefix + "numColorsInSeries").val() + ",";
 		for (var i = 0; i < 7; i++) {
+			/*
 			cmdBytes += "0x" + $("#" + cmdPosPrefix + "colorSeriesArr" + i).attr('value').substring(0,2) + ",";  // R
 			cmdBytes += "0x" + $("#" + cmdPosPrefix + "colorSeriesArr" + i).attr('value').substring(2,4) + ",";  // G
 			cmdBytes += "0x" + $("#" + cmdPosPrefix + "colorSeriesArr" + i).attr('value').substring(4,6) + ",";  // B
+			*/
+			cmdBytes += getColorStrCSV(cmdPosPrefix + "colorSeriesArr" + i) + ",";
 		}
 		cmdBytes = cmdBytes.substring(0, cmdBytes.length-1);  // Take off the last ","
 		
@@ -262,9 +368,12 @@ function getCmdBytes(cmdPos) {
 		
 		
 		for (var i = 0; i < 6; i++) {
+			/*
 			cmdBytes += "0x" + $("#" + cmdPosPrefix + "colorSeriesArr" + i).attr('value').substring(0,2) + ",";  // R
 			cmdBytes += "0x" + $("#" + cmdPosPrefix + "colorSeriesArr" + i).attr('value').substring(2,4) + ",";  // G
 			cmdBytes += "0x" + $("#" + cmdPosPrefix + "colorSeriesArr" + i).attr('value').substring(4,6) + ",";  // B
+			*/
+			cmdBytes += getColorStrCSV(cmdPosPrefix + "colorSeriesArr" + i) + ",";
 		}
 		cmdBytes = cmdBytes.substring(0, cmdBytes.length-1);  // Take off the last ","
 		
@@ -352,6 +461,32 @@ function updateCbArr(cmdPos) {
 	}
 }
 
+function initRealTimeColorPicker(id, colorUsage) {
+	var elem = $('#' + id);
+	elem.spectrum({
+		//color: "#" + elem.val(),
+		color: "#" + elem.attr('value'),
+	    showInput: true,
+		preferredFormat: "hex",
+		clickoutFiresChange: true,
+		move: function(color) {
+			jQuery.ajaxSetup({async:false});
+			$.get("sendcolor2ard.php", {
+				colorUsage: colorUsage,
+				color: color.toHexString().substring(1,3) + color.toHexString().substring(3,5) + color.toHexString().substring(5,7)
+			}, function (data) {
+				//$("#result").html($("#result").html() + "<br />" + data);
+				//$("#resulttable").hide().show(0);
+			});
+			jQuery.ajaxSetup({async:true});
+		},
+		change: function(color) {
+			elem.attr('value', color.toHexString().substring(1,7));
+		}
+	});
+}
+
+/*
 function initEcmColorPicker(id, isOutside) {
 	// isOutside should be either 1 (Outside) or 0 (Inside)
 	var elem = $('#' + id);
@@ -374,6 +509,7 @@ function initEcmColorPicker(id, isOutside) {
 		}
 	});
 }
+*/
 
 function initFullColorPicker(elem, changeFn) {
 	if (elem.length) {  // if exists
@@ -403,6 +539,7 @@ function initStripCmdColorPicker(cmdPos, id) {
 	initFullColorPicker(elem, changeFn);
 }
 
+/*
 function initColored5sColorPicker(id) {
 	var elem = $("#" + id);
 	
@@ -412,6 +549,18 @@ function initColored5sColorPicker(id) {
 	}
 	
 	initFullColorPicker(elem, changeFn);
+}
+*/
+
+
+
+function getColorStrCSV(id) {
+	var colorStr = "";
+	colorStr += "0x" + $("#" + id).attr('value').substring(0,2) + ",";   // R
+	colorStr += "0x" + $("#" + id).attr('value').substring(2,4) + ",";   // G
+	colorStr += "0x" + $("#" + id).attr('value').substring(4,6);		 // B
+	
+	return colorStr;
 }
 
 // === document ready ===

@@ -20,6 +20,20 @@
 
 define("OUT_COLORED5S_COLOR", 0);
 define("IN_COLORED5S_COLOR", 1);
+define("HANDCOLOR_HOUR", 2);
+define("HANDCOLOR_MIN", 3);
+define("HANDCOLOR_SEC", 4);
+
+// COLOR_USAGE
+define("COLOR_USAGE_NONE", 0);
+define("COLOR_USAGE_OUT_ECM", 1);
+define("COLOR_USAGE_IN_ECM", 2);
+define("COLOR_USAGE_OUT_COLORED5S", 3);
+define("COLOR_USAGE_IN_COLORED5S", 4);
+define("COLOR_USAGE_HOUR_HAND", 5);
+define("COLOR_USAGE_MIN_HAND", 6);
+define("COLOR_USAGE_SEC_HAND", 7);
+
 
 function getCmdTable ($cmdBytes, $cmdPos) {
 	// Note: assumes $cmdBytes are all in INTEGER format!
@@ -274,9 +288,9 @@ function getTimestamp() {
 function getVarFromColorRing($varRequest) {
 	global $colorringIP;
 	$target = $colorringIP;
-	$request_url = $target . '/' . $varRequest;
+	$requestUrl = $target . '/' . $varRequest;
 	
-	$curl = curl_init($request_url);
+	$curl = curl_init($requestUrl);
 	curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4 ); 
 	curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);  // was 0.5
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
@@ -295,9 +309,16 @@ function getVarFromColorRing($varRequest) {
 function getByteArrayFromColorRing($fnName, $fnParamsStr) {
 	global $colorringIP;
 	$target = $colorringIP;
-	$request_url = $target . '/' . $fnName . '?params=' . $fnParamsStr;
 	
-	$curl = curl_init($request_url);
+	//$requestUrl = $target . '/' . $fnName . '?params=' . $fnParamsStr;
+	
+	$requestUrl = $target . '/' . $fnName;
+	if ($fnParamsStr != "") {
+		$requestUrl .= '?params=' . $fnParamsStr;
+	}
+	
+	
+	$curl = curl_init($requestUrl);
 	curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4 ); 
 	curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);  // was 0.5
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
