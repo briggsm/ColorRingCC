@@ -24,11 +24,17 @@
 
 include "ColorRingConnectionInfo.php";  // defines $colorringIP, $udpPort
 
-$isOutside = 1;
+//$isOutside = 1;
+$colorUsage = 0;
 $color = "000000";
 
+/*
 if (isset($_GET['isOutside'])) {
 	$isOutside = $_GET['isOutside'];  // Should be "1" or "0"
+}
+*/
+if (isset($_GET['colorUsage'])) {
+	$colorUsage = $_GET['colorUsage'];  // Should be an int from 0 to 255
 }
 
 if (isset($_GET['color'])) {
@@ -46,7 +52,8 @@ if (!$fp) {
 	$b = intval(substr($color, 4, 2), 16);
 	//echo "r: " . $r . ", g: " . $g . ", b: " . $b;
 	
-	fwrite($fp, chr($isOutside) . chr($r) . chr($g) . chr($b));
+	//fwrite($fp, chr($isOutside) . chr($r) . chr($g) . chr($b));
+	fwrite($fp, chr($colorUsage) . chr($r) . chr($g) . chr($b));
     fclose($fp);
 }
 	
