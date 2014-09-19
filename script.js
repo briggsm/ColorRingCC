@@ -304,6 +304,9 @@ function getCmdBytes(cmdPos) {
 		cmdBytes += $("#" + cmdPosPrefix + "numPixelsEachColor").val() + ",";
 		cmdBytes += $("#" + cmdPosPrefix + "colorSeriesNumIter").val() + ",";
 		cmdBytes += $("#" + cmdPosPrefix + "numPixelsToSkip").val() + ",";
+		var numIter = $("#" + cmdPosPrefix + "numIter").val();
+		cmdBytes += "" + ((numIter & 0xFF00) >> 8) + ",";  // MSB
+		cmdBytes += "" + (numIter & 0x00FF)		   + ",";  // LSB
 		
 		var animDelay = $("#" + cmdPosPrefix + "animDelay").val();
 		cmdBytes += "" + ((animDelay & 0xFF00) >> 8) + ",";  // MSB
@@ -315,7 +318,7 @@ function getCmdBytes(cmdPos) {
 		cmdBytes += getBoolBits(cmdPos) + ",";
 		
 		cmdBytes += $("#" + cmdPosPrefix + "numColorsInSeries").val() + ",";
-		for (var i = 0; i < 7; i++) {
+		for (var i = 0; i < 6; i++) {
 			/*
 			cmdBytes += "0x" + $("#" + cmdPosPrefix + "colorSeriesArr" + i).attr('value').substring(0,2) + ",";  // R
 			cmdBytes += "0x" + $("#" + cmdPosPrefix + "colorSeriesArr" + i).attr('value').substring(2,4) + ",";  // G

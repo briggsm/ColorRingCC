@@ -50,12 +50,13 @@ function getCmdTable ($cmdBytes, $cmdPos) {
 			$table .= getRowNumPixelsEachColor($cmdBytes, $cmdPos, 2);
 			$table .= getRowColorSeriesNumIter($cmdBytes, $cmdPos, 3);
 			$table .= getRowNumPixelsToSkip($cmdBytes, $cmdPos, 4);
-			$table .= getRowAnimDelay($cmdBytes, $cmdPos, 5);
-			$table .= getRowPauseAfter($cmdBytes, $cmdPos, 7);
-			$table .= getRowBoolBits($cmdBytes, $cmdPos, 9, array(0,1,3,4,5,6));
-			$table .= getRowNumColorsInSeries($cmdBytes, $cmdPos, 10);
-			for ($x = 0; $x < 7; $x++) {
-				$table .= getRowColorSeriesArrX($cmdBytes, $cmdPos, 11+($x*3), $x);
+			$table .= getRowNumIter($cmdBytes, $cmdPos, 5);
+			$table .= getRowAnimDelay($cmdBytes, $cmdPos, 7);
+			$table .= getRowPauseAfter($cmdBytes, $cmdPos, 9);
+			$table .= getRowBoolBits($cmdBytes, $cmdPos, 11, array(0,1,3,4,5,6));
+			$table .= getRowNumColorsInSeries($cmdBytes, $cmdPos, 12);
+			for ($x = 0; $x < 6; $x++) {
+				$table .= getRowColorSeriesArrX($cmdBytes, $cmdPos, 13+($x*3), $x);
 			}
 			break;
 		case 2:  // Shift

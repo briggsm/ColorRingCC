@@ -38,6 +38,10 @@
 						<option value=2 <?php echo $sel; ?>>Clock</option>
 						<?php $sel = $opModeOutside == 3 ? "selected" : ""; ?>
 						<option value=3 <?php echo $sel; ?>>Colored 5's</option>
+						<?php $sel = $opModeOutside == 4 ? "selected" : ""; ?>
+						<option value=4 <?php echo $sel; ?>>Audio Visualizer</option>
+						<?php $sel = $opModeOutside == 5 ? "selected" : ""; ?>
+						<option value=5 <?php echo $sel; ?>>Audio Level</option>
 					</select>
 				</td>
 				<td>
@@ -50,6 +54,10 @@
 						<option value=2 <?php echo $sel; ?>>Clock</option>
 						<?php $sel = $opModeInside == 3 ? "selected" : ""; ?>
 						<option value=3 <?php echo $sel; ?>>Colored 5's</option>
+						<?php $sel = $opModeInside == 4 ? "selected" : ""; ?>
+						<option value=4 <?php echo $sel; ?>>Audio Visualizer</option>
+						<?php $sel = $opModeOutside == 5 ? "selected" : ""; ?>
+						<option value=5 <?php echo $sel; ?>>Audio Level</option>
 					</select>
 				</td>
 			</tr>
