@@ -69,12 +69,12 @@
 	
 	
 	<table border="1" cellpadding="10"><tr><td>
-		<h3>Outside External Ctrl Mode (oecm)</h3>
 		<p>
 			<strong>Mode</strong><br />
 			0 = Strip Color<br />
 			1 = Flow<br />
 		</p>
+		<h3>Outside External Ctrl Mode (oecm)</h3>
 		<table border=1>
 			<tr>
 				<th>Mode</th> <th>Speed (if Flow)</th> <th>Num Sections (if Flow)</th>
@@ -124,39 +124,7 @@
 		</table>
 	</td></tr></table>
 	
-	<table border="1" cellpadding="10"><tr><td>
-		<h3>Outside Colored 5's</h3>
-		<?php
-		$paramsStr = "" . OUT_COLORED5S_COLOR;
-		$colorBA = getByteArrayFromColorRing("setHackNameToColor", $paramsStr);
-		?>
-		<table border=1>
-			<tr>
-				<td><input id="outColored5sColor" value="<?php echo sprintf("%02X", intval($colorBA[0], 0)) . sprintf("%02X", intval($colorBA[1], 0)) . sprintf("%02X", intval($colorBA[2], 0)) ?>" /></td>
-				<script>
-					//initColored5sColorPicker("outColored5sColor");
-					initRealTimeColorPicker('outColored5sColor', <?php echo COLOR_USAGE_OUT_COLORED5S; ?>);
-				</script>
-				<td><input type="button" id="outColored5sColorBtn" value="Submit" onClick="outColored5sColorSubmit()" />(to lock it in)</td>
-			</tr>
-		</table>
 	
-		<h3>Inside Colored 5's</h3>
-		<?php
-		$paramsStr = "" . IN_COLORED5S_COLOR;
-		$colorBA = getByteArrayFromColorRing("setHackNameToColor", $paramsStr);
-		?>
-		<table border=1>
-			<tr>
-				<td><input id="inColored5sColor" value="<?php echo sprintf("%02X", intval($colorBA[0], 0)) . sprintf("%02X", intval($colorBA[1], 0)) . sprintf("%02X", intval($colorBA[2], 0)) ?>" /></td>
-				<script>
-					//initColored5sColorPicker("inColored5sColor");
-					initRealTimeColorPicker('inColored5sColor', <?php echo COLOR_USAGE_IN_COLORED5S; ?>);
-				</script>
-				<td><input type="button" id="inColored5sColorBtn" value="Submit" onClick="inColored5sColorSubmit()" />(to lock it in)</td>
-			</tr>
-		</table>
-	</td></tr></table>
 	
 	
 	<table border="1" cellpadding="10"><tr><td>
@@ -299,6 +267,76 @@
 		</table>
 		
 	</td></tr></table>
+	
+	<!-- === Colored 5's === -->
+	<table border="1" cellpadding="10"><tr><td>
+		<h3>Outside Colored 5's</h3>
+		<?php
+		$paramsStr = "" . OUT_COLORED5S_COLOR;
+		$colorBA = getByteArrayFromColorRing("setHackNameToColor", $paramsStr);
+		?>
+		<table border=1>
+			<tr>
+				<td><input id="outColored5sColor" value="<?php echo sprintf("%02X", intval($colorBA[0], 0)) . sprintf("%02X", intval($colorBA[1], 0)) . sprintf("%02X", intval($colorBA[2], 0)) ?>" /></td>
+				<script>
+					//initColored5sColorPicker("outColored5sColor");
+					initRealTimeColorPicker('outColored5sColor', <?php echo COLOR_USAGE_OUT_COLORED5S; ?>);
+				</script>
+				<td><input type="button" id="outColored5sColorBtn" value="Submit" onClick="outColored5sColorSubmit()" />(to lock it in)</td>
+			</tr>
+		</table>
+	
+		<h3>Inside Colored 5's</h3>
+		<?php
+		$paramsStr = "" . IN_COLORED5S_COLOR;
+		$colorBA = getByteArrayFromColorRing("setHackNameToColor", $paramsStr);
+		?>
+		<table border=1>
+			<tr>
+				<td><input id="inColored5sColor" value="<?php echo sprintf("%02X", intval($colorBA[0], 0)) . sprintf("%02X", intval($colorBA[1], 0)) . sprintf("%02X", intval($colorBA[2], 0)) ?>" /></td>
+				<script>
+					//initColored5sColorPicker("inColored5sColor");
+					initRealTimeColorPicker('inColored5sColor', <?php echo COLOR_USAGE_IN_COLORED5S; ?>);
+				</script>
+				<td><input type="button" id="inColored5sColorBtn" value="Submit" onClick="inColored5sColorSubmit()" />(to lock it in)</td>
+			</tr>
+		</table>
+	</td></tr></table>
+	<!-- === end Colored 5's -->
+	
+	
+	<!-- === Clap for Time === -->
+	<h3>Clap for Time</h3>
+	<table border=1>
+		<tr>
+			<td>Enable:</td>
+			<td>
+				<?php $chkd = getVarFromColorRing("enableClap") == "1" ? "checked" : ""; ?>
+				<input type="checkbox" id="enableClapCB" value="" <?php echo $chkd ?> onchange="clapSubmit()" />
+			</td>
+		</tr>
+		
+		<tr>
+			<td>Amplitude Threshold [0-59]:</td>
+			<td><input type="text" id="clapAmpThreshold" value="<?php echo getVarFromColorRing("clapAmpThreshold"); ?>" onkeyup="ifEnterClickBtn(event, 'clapBtn')" /></td>
+		</tr>
+		<tr>
+			<td>Minimum Delay Until Next Clap (cs) [10-255] (def: 20):</td>
+			<td><input type="text" id="clapMinDelayUntilNext" value="<?php echo getVarFromColorRing("clapMinDelayUntilNext"); ?>" onkeyup="ifEnterClickBtn(event, 'clapBtn')" /></td>
+		</tr>
+		<tr>
+			<td>Window for Next Clap (cs) [0-255] (def: 20):</td>
+			<td><input type="text" id="clapWindowForNext" value="<?php echo getVarFromColorRing("clapWindowForNext"); ?>" onkeyup="ifEnterClickBtn(event, 'clapBtn')" /></td>
+		</tr>
+		<tr>
+			<td>Show Time for this Number of Seconds [0-255]:</td>
+			<td><input type="text" id="clapShowTimeNumSeconds" value="<?php echo getVarFromColorRing("clapShowTimeNumSeconds"); ?>" onkeyup="ifEnterClickBtn(event, 'clapBtn')" /></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><input type="button" id="clapBtn" value="Submit" onClick="clapSubmit()" /></td>
+		</tr>
+	</table>
 	
 	
 	<h3>Get Variables</h3>

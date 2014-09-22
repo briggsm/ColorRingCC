@@ -97,6 +97,18 @@ function inColored5sColorSubmit() {
 	});
 }
 
+function clapSubmit() {
+	// 0xE0 => 224
+	
+	var chkdStr = $("#enableClapCB").is(":checked") ? "1" : "0";
+	
+	$.get("sendpkt2ard.php", {
+		packet: "224," + chkdStr + "," + $("#clapAmpThreshold").val() + "," + $("#clapMinDelayUntilNext").val() + "," + $("#clapWindowForNext").val() + "," + $("#clapShowTimeNumSeconds").val()
+	}, function (data) {
+		$("#result").html(data);
+	});
+}
+
 function maxNumStripCmdsSubmit() {
 	// Send a varRequest (variable request)
 	$.get("sendpkt2ard.php", {
