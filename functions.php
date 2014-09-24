@@ -64,9 +64,9 @@ function getCmdTable ($cmdBytes, $cmdPos) {
 			$table .= getRowEndPixelNum($cmdBytes, $cmdPos, 2);
 			$table .= getRowNumPixelsToSkip($cmdBytes, $cmdPos, 3);
 			$table .= getRowNumIter($cmdBytes, $cmdPos, 4);
-			$table .= getRowAnimDelay($cmdBytes, $cmdPos, 5);
-			$table .= getRowPauseAfter($cmdBytes, $cmdPos, 7);
-			$table .= getRowBoolBits($cmdBytes, $cmdPos, 9, array(1,2,3));
+			$table .= getRowAnimDelay($cmdBytes, $cmdPos, 6);
+			$table .= getRowPauseAfter($cmdBytes, $cmdPos, 8);
+			$table .= getRowBoolBits($cmdBytes, $cmdPos, 10, array(1,2,3));
 			break;
 		case 3:  // Flow
 			$table .= getRowStartPixelNum($cmdBytes, $cmdPos, 1);
@@ -155,7 +155,8 @@ function getRowNumIter($cmdBytes, $cmdPos, $idx) {
 
 	$table = "<tr>";
 	$table .= "<td>numIter: </td>";
-	$table .= '<td><input type="text" id="' . getCmdPosPrefix($cmdPos) . 'numIter" value="' . $cmdBytes[$idx] . '" onfocusout="updateCbArr(' . $cmdPos . ')" onkeyup="stripCmdTextInputKeyUp(' . $cmdPos . ')" /></td>';
+	$word = ($cmdBytes[$idx] << 8) + $cmdBytes[$idx+1];
+	$table .= '<td><input type="text" id="' . getCmdPosPrefix($cmdPos) . 'numIter" value="' . $word . '" onfocusout="updateCbArr(' . $cmdPos . ')" onkeyup="stripCmdTextInputKeyUp(' . $cmdPos . ')" /></td>';
 	$table .= "</tr>";
 	
 	return $table;

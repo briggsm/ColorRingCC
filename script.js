@@ -347,7 +347,9 @@ function getCmdBytes(cmdPos) {
 		cmdBytes += $("#" + cmdPosPrefix + "startPixelNum").val() + ",";
 		cmdBytes += $("#" + cmdPosPrefix + "endPixelNum").val() + ",";
 		cmdBytes += $("#" + cmdPosPrefix + "numPixelsToSkip").val() + ",";
-		cmdBytes += $("#" + cmdPosPrefix + "numIter").val() + ",";
+		var numIter = $("#" + cmdPosPrefix + "numIter").val();
+		cmdBytes += "" + ((numIter & 0xFF00) >> 8) + ",";  // MSB
+		cmdBytes += "" + (numIter & 0x00FF)		   + ",";  // LSB
 
 		var animDelay = $("#" + cmdPosPrefix + "animDelay").val();
 		cmdBytes += "" + ((animDelay & 0xFF00) >> 8) + ",";  // MSB
