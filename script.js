@@ -64,14 +64,28 @@ function iecmSubmit() {
 	});
 }
 
+function colored5sSubmit() {
+	// 0xBD => 189
+	
+	var chkdStrOut = $("#colored5sEnableOutCB").is(":checked") ? "1" : "0";
+	var chkdStrIn = $("#colored5sEnableInCB").is(":checked") ? "1" : "0";
+	
+	$.get("sendpkt2ard.php", {
+		packet: "189," + chkdStrOut + "," + chkdStrIn + "," + getColorStrCSV("outColored5sColor") + "," + getColorStrCSV("inColored5sColor")
+	}, function (data) {
+		$("#result").html(data);
+	});
+}
+
+/*
 function outColored5sColorSubmit() {
 	// 0xBD => 189
-	/*
-	var colorStr = "";
-	colorStr += "0x" + $("#outColored5sColor").attr('value').substring(0,2) + ",";   // R
-	colorStr += "0x" + $("#outColored5sColor").attr('value').substring(2,4) + ",";   // G
-	colorStr += "0x" + $("#outColored5sColor").attr('value').substring(4,6);		  // B
-	*/
+	
+	// var colorStr = "";
+	// colorStr += "0x" + $("#outColored5sColor").attr('value').substring(0,2) + ",";   // R
+	// colorStr += "0x" + $("#outColored5sColor").attr('value').substring(2,4) + ",";   // G
+	// colorStr += "0x" + $("#outColored5sColor").attr('value').substring(4,6);		  // B
+	
 
 	$.get("sendpkt2ard.php", {
 		packet: "189," + getColorStrCSV("outColored5sColor")
@@ -82,12 +96,12 @@ function outColored5sColorSubmit() {
 
 function inColored5sColorSubmit() {
 	// 0xBE => 190
-	/*
-	var colorStr = "";
-	colorStr += "0x" + $("#inColored5sColor").attr('value').substring(0,2) + ",";   // R
-	colorStr += "0x" + $("#inColored5sColor").attr('value').substring(2,4) + ",";   // G
-	colorStr += "0x" + $("#inColored5sColor").attr('value').substring(4,6);		  	// B
-	*/
+	
+	// var colorStr = "";
+	// colorStr += "0x" + $("#inColored5sColor").attr('value').substring(0,2) + ",";   // R
+	// colorStr += "0x" + $("#inColored5sColor").attr('value').substring(2,4) + ",";   // G
+	// colorStr += "0x" + $("#inColored5sColor").attr('value').substring(4,6);		  	// B
+	
 	//var colorStr = getColorStrCSV("inColored5sColor");
 
 	$.get("sendpkt2ard.php", {
@@ -96,14 +110,16 @@ function inColored5sColorSubmit() {
 		$("#result").html(data);
 	});
 }
+*/
 
 function clapSubmit() {
 	// 0xE0 => 224
 	
-	var chkdStr = $("#enableClapCB").is(":checked") ? "1" : "0";
+	var chkdStrOut = $("#enableClapOutCB").is(":checked") ? "1" : "0";
+	var chkdStrIn = $("#enableClapInCB").is(":checked") ? "1" : "0";
 	
 	$.get("sendpkt2ard.php", {
-		packet: "224," + chkdStr + "," + $("#clapAmpThreshold").val() + "," + $("#clapMinDelayUntilNext").val() + "," + $("#clapWindowForNext").val() + "," + $("#clapShowTimeNumSeconds").val()
+		packet: "224," + chkdStrOut + "," + chkdStrIn + "," + $("#clapAmpThreshold").val() + "," + $("#clapMinDelayUntilNext").val() + "," + $("#clapWindowForNext").val() + "," + $("#clapShowTimeNumSeconds").val()
 	}, function (data) {
 		$("#result").html(data);
 	});
@@ -463,6 +479,13 @@ function opModeDDChanged() {
 	}, function (data) {
 		$("#result").html(data);
 	});
+}
+
+function updateCbArrAndSend(cmdPos) {
+	var cmdPosPrefix = getCmdPosPrefix(cmdPos);
+	
+	updateCbArr(cmdPos);
+	$("#" + cmdPosPrefix + "sendOneCmdBtn").click();
 }
 
 function updateCbArr(cmdPos) {

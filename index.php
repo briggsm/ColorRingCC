@@ -28,6 +28,7 @@
 				<th>Inside Strip</th>
 			</tr>
 			<tr>
+				<!-- Note: these are also defined in the ColorRing's "AllDefs.h" file -->
 				<td>
 					<select id="opModeOutsideDD" onChange="opModeDDChanged()">
 						<?php $sel = $opModeOutside == 0 ? "selected" : ""; ?>
@@ -37,11 +38,9 @@
 						<?php $sel = $opModeOutside == 2 ? "selected" : ""; ?>
 						<option value=2 <?php echo $sel; ?>>Clock</option>
 						<?php $sel = $opModeOutside == 3 ? "selected" : ""; ?>
-						<option value=3 <?php echo $sel; ?>>Colored 5's</option>
+						<option value=3 <?php echo $sel; ?>>Audio Visualizer</option>
 						<?php $sel = $opModeOutside == 4 ? "selected" : ""; ?>
-						<option value=4 <?php echo $sel; ?>>Audio Visualizer</option>
-						<?php $sel = $opModeOutside == 5 ? "selected" : ""; ?>
-						<option value=5 <?php echo $sel; ?>>Audio Level</option>
+						<option value=4 <?php echo $sel; ?>>Audio Level</option>
 					</select>
 				</td>
 				<td>
@@ -53,11 +52,9 @@
 						<?php $sel = $opModeInside == 2 ? "selected" : ""; ?>
 						<option value=2 <?php echo $sel; ?>>Clock</option>
 						<?php $sel = $opModeInside == 3 ? "selected" : ""; ?>
-						<option value=3 <?php echo $sel; ?>>Colored 5's</option>
+						<option value=3 <?php echo $sel; ?>>Audio Visualizer</option>
 						<?php $sel = $opModeInside == 4 ? "selected" : ""; ?>
-						<option value=4 <?php echo $sel; ?>>Audio Visualizer</option>
-						<?php $sel = $opModeOutside == 5 ? "selected" : ""; ?>
-						<option value=5 <?php echo $sel; ?>>Audio Level</option>
+						<option value=4 <?php echo $sel; ?>>Audio Level</option>
 					</select>
 				</td>
 			</tr>
@@ -266,43 +263,64 @@
 			
 		</table>
 		
-	</td></tr></table>
+		<!-- === Colored 5's === -->
+		<p><strong>Colored 5's</strong></p>
+		
+		<table border="1" cellpadding="10"><tr><td>
+			<table border=1>
+				<tr>
+					<th></th>
+					<th>Outside</th>
+					<th>Inside</th>
+				</tr>
+				<tr>
+					<td>Enable</td>
+					<td>
+						<?php $chkd = getVarFromColorRing("colored5sEnableOut") == "1" ? "checked" : ""; ?>
+						<input type="checkbox" id="colored5sEnableOutCB" value="" <?php echo $chkd ?> onchange="colored5sSubmit()" />
+					</td>
+					<td>
+						<?php $chkd = getVarFromColorRing("colored5sEnableIn") == "1" ? "checked" : ""; ?>
+						<input type="checkbox" id="colored5sEnableInCB" value="" <?php echo $chkd ?> onchange="colored5sSubmit()" />
+					</td>
+				</tr>
+			</table>
+			
+			<h3>Outside</h3>
+			<?php
+			$paramsStr = "" . OUT_COLORED5S_COLOR;
+			$colorBA = getByteArrayFromColorRing("setHackNameToColor", $paramsStr);
+			?>
+			<table border=1>
+				<tr>
+					<td><input id="outColored5sColor" value="<?php echo sprintf("%02X", intval($colorBA[0], 0)) . sprintf("%02X", intval($colorBA[1], 0)) . sprintf("%02X", intval($colorBA[2], 0)) ?>" /></td>
+					<script>
+						//initColored5sColorPicker("outColored5sColor");
+						initRealTimeColorPicker('outColored5sColor', <?php echo COLOR_USAGE_OUT_COLORED5S; ?>);
+					</script>
+					<td><input type="button" id="outColored5sColorBtn" value="Submit" onClick="colored5sSubmit()" />(to lock it in)</td>
+				</tr>
+			</table>
 	
-	<!-- === Colored 5's === -->
-	<table border="1" cellpadding="10"><tr><td>
-		<h3>Outside Colored 5's</h3>
-		<?php
-		$paramsStr = "" . OUT_COLORED5S_COLOR;
-		$colorBA = getByteArrayFromColorRing("setHackNameToColor", $paramsStr);
-		?>
-		<table border=1>
-			<tr>
-				<td><input id="outColored5sColor" value="<?php echo sprintf("%02X", intval($colorBA[0], 0)) . sprintf("%02X", intval($colorBA[1], 0)) . sprintf("%02X", intval($colorBA[2], 0)) ?>" /></td>
-				<script>
-					//initColored5sColorPicker("outColored5sColor");
-					initRealTimeColorPicker('outColored5sColor', <?php echo COLOR_USAGE_OUT_COLORED5S; ?>);
-				</script>
-				<td><input type="button" id="outColored5sColorBtn" value="Submit" onClick="outColored5sColorSubmit()" />(to lock it in)</td>
-			</tr>
-		</table>
-	
-		<h3>Inside Colored 5's</h3>
-		<?php
-		$paramsStr = "" . IN_COLORED5S_COLOR;
-		$colorBA = getByteArrayFromColorRing("setHackNameToColor", $paramsStr);
-		?>
-		<table border=1>
-			<tr>
-				<td><input id="inColored5sColor" value="<?php echo sprintf("%02X", intval($colorBA[0], 0)) . sprintf("%02X", intval($colorBA[1], 0)) . sprintf("%02X", intval($colorBA[2], 0)) ?>" /></td>
-				<script>
-					//initColored5sColorPicker("inColored5sColor");
-					initRealTimeColorPicker('inColored5sColor', <?php echo COLOR_USAGE_IN_COLORED5S; ?>);
-				</script>
-				<td><input type="button" id="inColored5sColorBtn" value="Submit" onClick="inColored5sColorSubmit()" />(to lock it in)</td>
-			</tr>
-		</table>
+			<h3>Inside</h3>
+			<?php
+			$paramsStr = "" . IN_COLORED5S_COLOR;
+			$colorBA = getByteArrayFromColorRing("setHackNameToColor", $paramsStr);
+			?>
+			<table border=1>
+				<tr>
+					<td><input id="inColored5sColor" value="<?php echo sprintf("%02X", intval($colorBA[0], 0)) . sprintf("%02X", intval($colorBA[1], 0)) . sprintf("%02X", intval($colorBA[2], 0)) ?>" /></td>
+					<script>
+						//initColored5sColorPicker("inColored5sColor");
+						initRealTimeColorPicker('inColored5sColor', <?php echo COLOR_USAGE_IN_COLORED5S; ?>);
+					</script>
+					<td><input type="button" id="inColored5sColorBtn" value="Submit" onClick="colored5sSubmit()" />(to lock it in)</td>
+				</tr>
+			</table>
+		</td></tr></table>
+		<!-- === end Colored 5's -->
+		
 	</td></tr></table>
-	<!-- === end Colored 5's -->
 	
 	
 	<!-- === Clap for Time === -->
@@ -311,8 +329,10 @@
 		<tr>
 			<td>Enable:</td>
 			<td>
-				<?php $chkd = getVarFromColorRing("enableClap") == "1" ? "checked" : ""; ?>
-				<input type="checkbox" id="enableClapCB" value="" <?php echo $chkd ?> onchange="clapSubmit()" />
+				<?php $chkd = getVarFromColorRing("enableClapOut") == "1" ? "checked" : ""; ?>
+				<label><input type="checkbox" id="enableClapOutCB" value="" <?php echo $chkd ?> onchange="clapSubmit()" /> Outside</label>
+				<?php $chkd = getVarFromColorRing("enableClapIn") == "1" ? "checked" : ""; ?>
+				<label><input type="checkbox" id="enableClapInCB" value="" <?php echo $chkd ?> onchange="clapSubmit()" /> Inside</label>
 			</td>
 		</tr>
 		
