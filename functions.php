@@ -242,37 +242,37 @@ function getRowBoolBits($cmdBytes, $cmdPos, $idx, $bitArr) {
 	
 	if (in_array(0, $bitArr)) {
 		$chkd = (($bb & 0x01) >> 0) == 1 ? "checked" : "";
-		$table .= '<tr><td><label><input type="checkbox" id="' . getCmdPosPrefix($cmdPos) . 'bbDestructive" value="" ' . $chkd . ' onchange="updateCbArr(' . $cmdPos . ')" /> Destructive</label></td></tr>';
+		$table .= '<tr><td><label><input type="checkbox" id="' . getCmdPosPrefix($cmdPos) . 'bbDestructive" value="" ' . $chkd . ' onchange="updateCbArrAndSend(' . $cmdPos . ')" /> Destructive</label></td></tr>';
 	}
 	
 	if (in_array(1, $bitArr)) {
 		$chkd = (($bb & 0x02) >> 1) == 1 ? "checked" : "";
-		$table .= '<tr><td><label><input type="checkbox" id="' . getCmdPosPrefix($cmdPos) . 'bbDirection" value="" ' . $chkd . ' onchange="updateCbArr(' . $cmdPos . ')" /> Direction(checked=CW)</label></td></tr>';
+		$table .= '<tr><td><label><input type="checkbox" id="' . getCmdPosPrefix($cmdPos) . 'bbDirection" value="" ' . $chkd . ' onchange="updateCbArrAndSend(' . $cmdPos . ')" /> Direction(checked=CW)</label></td></tr>';
 	}
 
 	if (in_array(2, $bitArr)) {
 		$chkd = (($bb & 0x04) >> 2) == 1 ? "checked" : "";
-		$table .= '<tr><td><label><input type="checkbox" id="' . getCmdPosPrefix($cmdPos) . 'bbWrap" value="" ' . $chkd . ' onchange="updateCbArr(' . $cmdPos . ')" /> Wrap</label></td></tr>';
+		$table .= '<tr><td><label><input type="checkbox" id="' . getCmdPosPrefix($cmdPos) . 'bbWrap" value="" ' . $chkd . ' onchange="updateCbArrAndSend(' . $cmdPos . ')" /> Wrap</label></td></tr>';
 	}
 	
 	if (in_array(3, $bitArr)) {
 		$chkd = (($bb & 0x08) >> 3) == 1 ? "checked" : "";
-		$table .= '<tr><td><label><input type="checkbox" id="' . getCmdPosPrefix($cmdPos) . 'bbIsAnim" value="" ' . $chkd . ' onchange="updateCbArr(' . $cmdPos . ')" /> Animated</label></td></tr>';
+		$table .= '<tr><td><label><input type="checkbox" id="' . getCmdPosPrefix($cmdPos) . 'bbIsAnim" value="" ' . $chkd . ' onchange="updateCbArrAndSend(' . $cmdPos . ')" /> Animated</label></td></tr>';
 	}
 	
 	if (in_array(4, $bitArr)) {
 		$chkd = (($bb & 0x10) >> 4) == 1 ? "checked" : "";
-		$table .= '<tr><td><label><input type="checkbox" id="' . getCmdPosPrefix($cmdPos) . 'bbClearStrip" value="" ' . $chkd . ' onchange="updateCbArr(' . $cmdPos . ')" /> Clear Strip</label></td></tr>';
+		$table .= '<tr><td><label><input type="checkbox" id="' . getCmdPosPrefix($cmdPos) . 'bbClearStrip" value="" ' . $chkd . ' onchange="updateCbArrAndSend(' . $cmdPos . ')" /> Clear Strip</label></td></tr>';
 	}
 	
 	if (in_array(5, $bitArr)) {
 		$chkd = (($bb & 0x20) >> 5) == 1 ? "checked" : "";
-		$table .= '<tr><td><label><input type="checkbox" id="' . getCmdPosPrefix($cmdPos) . 'bbGradiate" value="" ' . $chkd . ' onchange="updateCbArr(' . $cmdPos . ')" /> Gradiate</label></td></tr>';
+		$table .= '<tr><td><label><input type="checkbox" id="' . getCmdPosPrefix($cmdPos) . 'bbGradiate" value="" ' . $chkd . ' onchange="updateCbArrAndSend(' . $cmdPos . ')" /> Gradiate</label></td></tr>';
 	}
 	
 	if (in_array(6, $bitArr)) {
 		$chkd = (($bb & 0x40) >> 6) == 1 ? "checked" : "";
-		$table .= '<tr><td><label><input type="checkbox" id="' . getCmdPosPrefix($cmdPos) . 'bbGradiateLastPixelFirstColor" value="" ' . $chkd . ' onchange="updateCbArr(' . $cmdPos . ')" /> Gradiate (Last Pixel)<br />chkd => Last Pixel is First Color<br />unchkd => Last Pixel is Last Color</label></td></tr>';
+		$table .= '<tr><td><label><input type="checkbox" id="' . getCmdPosPrefix($cmdPos) . 'bbGradiateLastPixelFirstColor" value="" ' . $chkd . ' onchange="updateCbArrAndSend(' . $cmdPos . ')" /> Gradiate (Last Pixel)<br />chkd => Last Pixel is First Color<br />unchkd => Last Pixel is Last Color</label></td></tr>';
 	}
 	
 	return $table;
