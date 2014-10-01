@@ -18,22 +18,12 @@
 	accompanying COPYING file
 */
 
-include "siteGenFunctions.php";
+$DEBUG = true;
 
-if (!isset($_GET['cmdBytesStr']) || !isset($_GET['cmdPos'])) {
-	echo "<p>cmdBytes not set and/or cmdPos not set!</p>";
-	exit();
-}
-
-$cmdBytesStr = $_GET['cmdBytesStr'];
-$cmdPos = $_GET['cmdPos'];
-
-//echo "cmdBytesStr: " . $cmdBytesStr . "<br />";
-
-$cmdBytes = explode(",", $cmdBytesStr);
-
-$table = getCmdTable($cmdBytes, $cmdPos);
-
-echo $table;
+// Live
+$DB_HOST = "localhost";
+$DB_NAME = "colorring";
+$DB_USER = "colorring";
+$DB_PASSWORD = "colorring";
 
 ?>

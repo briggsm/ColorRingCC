@@ -12,7 +12,11 @@
 <body>
 	<?php
 	include "ColorRingConnectionInfo.php";
-	include "functions.php";
+	include "appInit.php";
+	include "siteGenFunctions.php";
+	include "siteDbFunctions.php";
+	
+	$conn = connect_to_DB();
 	?>
 	<table border="1" cellpadding="10"><tr><td>
 		<h3>OpMode</h3>
@@ -386,80 +390,142 @@
 
 		echo '<input type="hidden" id="maxNumStripCmds" value="' . $maxNumStripCmds . '" />';
 		
-		echo '<tr><td><input type="button" id="sendAllCmdsBtn" value="Send All Cmds" onClick="sendAllCmdsSubmit()" /></td></tr>';
+		echo '<tr><th>ColorRing</th><th>Database</th></tr>';
+		echo '<tr>';
+			echo '<td valign="top"><input type="button" id="sendAllCmdsBtn" value="Send All Cmds" onClick="sendAllCmdsSubmit()" /></td>';
+
+			echo '<td>';
+				echo '<table border=1>';
+		
+				// Saved LightShows DD
+				echo '<tr><td>';
+				$whereCondArrArr = "*";
+				$result = dbSelect("LightShow", $whereCondArrArr, "ORDER BY `lightShowName` ASC");
+				$numRecords = mysql_num_rows($result);
+				echo 'Saved Light Shows: <select id="savedLightShowsDD" onChange="savedLightShowsDDChanged()" >';
+				//$sel = $isLightShowInDB ? "" : "selected";
+				$sel = "selected";
+				echo '<option value="na" ' . $sel . '>- - - - -</option>';
+		
+				for ($i = 0; $i < $numRecords; $i++) {
+					$row = mysql_fetch_assoc($result);
+			
+					$lightShowIdx = $row['idx'];
+					$lightShowName = $row['lightShowName'];
+			
+					//$sel = $lsIdx == $dbLightShowIdx ? "selected" : "";
+					$sel = "";
+					echo '<option value="' . $lightShowIdx . '" ' . $sel . '>' . $lightShowName . '</option>';
+				}
+				echo '</select>';
+				echo '</td></tr>';
+		
+				// Saved Light Shows Area
+				echo '<tr><td>Light Show Name: <input type="text" size="40" id="lightShowName" value="" onkeyup="ifEnterClickBtn(event, \'saveLightShowBtn\')" /> <input type="button" id="saveLightShowBtn" value="Save Entire Light Show" onClick="saveLightShowSubmit()" /></td></tr>';
+				echo '<tr><td><p id="saveLightShowResult"></p></td></tr>';
+		
+				echo '</td></tr>';
+				echo '</table>';
+			echo '</td>';
+		echo '</tr>';
 		
 		for ($cmdPos = 0; $cmdPos < $maxNumStripCmds * 2; $cmdPos++) {
-		?>
-			<tr><td>
+			$cmdPosPrefix = "cmdPos" . str_pad($cmdPos, 3, "0", STR_PAD_LEFT);  // e.g. cmdPos001, 009, 010, etc.
 
-				<?php
-				/*
-				//$target = "192.168.5.85";
-				$target = $colorringIP;
-				
-				$request_url = $target . '/setHackNameToCmd?params=' . $cmdPos;
-				*/
-				
+			$paramsStr = $cmdPos;
+			$cmdBytesArr = getByteArrayFromColorRing("setHackNameToCmd", $paramsStr);
+			$cmdBytesStr = cmdBytesArr2Str($cmdBytesArr);
 			
-				//$cmdBytes = getRemoteByteArray($request_url);
-				$paramsStr = $cmdPos;
-				$cmdBytes = getByteArrayFromColorRing("setHackNameToCmd", $paramsStr);
+			// Check if this retrieved cmd is also in MySQL DB & set appropriate variables
+			$whereCondArrArr = array(array("cmdBytesStr", "=", $cmdBytesStr));
+			$result = dbSelect("SingleCmd", $whereCondArrArr);
+			$numRecords = mysql_num_rows($result);
 			
+			// Init
+			$isCmdInDB = false;
+			$dbCmdIdx = 1;  // "Invalid"
+			$dbCmdName = "";
 			
-				/*
-				$curl = curl_init($request_url);
-				curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4 ); 
-				curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);  // was 0.5
-				curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-				$curl_response = curl_exec($curl);
-				curl_close($curl);
+			if ($numRecords > 0) {
+				$row = mysql_fetch_assoc($result);  // just get the 1st record (if more exist, they'll be ignored)
+				$dbCmdIdx = $row['idx'];
+				if ($dbCmdIdx != 1) {  // if not "Invalid"
+					$isCmdInDB = true;
+					$dbCmdName = $row['cmdName'];
+				}
+			}
 			
-				$jsonB = json_decode($curl_response, true);
-				//echo "jsonB: "; print_r($jsonB);
-				$cmdBytesStr = $jsonB["name"];
-				//echo "cmdBytesStr: " . $cmdBytesStr;
-				$cmdBytes = explode(",", $cmdBytesStr);
-				*/
-				
-				
-				$cmdType = $cmdBytes[0];
-			
-				//echo "cmdBytes: <br />";
-				//print_r($cmdBytes);
-			
-				$table = getCmdTable($cmdBytes, $cmdPos);
-			
-				// === Display Cmd Table ===
-				echo "<h2>Cmd: " . $cmdPos . "</h2>";
-
-				$cmdPosPrefix = "cmdPos" . str_pad($cmdPos, 3, "0", STR_PAD_LEFT);  // e.g. cmdPos001, 009, 010, etc.
-				echo '<select id="' . $cmdPosPrefix . 'cmdTypeDD" onChange="cmdTypeDDChanged(this, ' . $cmdPos . ')" >';
-				$sel = ($cmdType < 0 || $cmdType > 3) ? "selected" : "";
-				echo '<option value="none" ' . $sel . '>None</option>';
-				$sel = $cmdType == 0 ? "selected" : "";
-				echo '<option value="ssp" ' . $sel . '>Set Sequential Pixels</option>';
-				//$sel = $cmdType == 1 ? "selected" : "";
-				//echo '<option value="bcg" ' . $sel . '>Build Color Gradient</option>';
-				$sel = $cmdType == 2 ? "selected" : "";
-				echo '<option value="shift" ' . $sel . '>Shift</option>';
-				$sel = $cmdType == 3 ? "selected" : "";
-				echo '<option value="flow" ' . $sel . '>Flow</option>';
-				echo '</select>';
-			
-				echo '<div id="' . $cmdPosPrefix . 'div">';
-				echo $table;
-				echo '</div>';
-				
-				?>
-
-			</td></tr>
-	<?php
-		echo '<tr><td><input type="button" id="' . $cmdPosPrefix . 'sendOneCmdBtn" value="Send Just This Cmd (' . $cmdPos . ')" onClick="sendOneCmdSubmit(' . $cmdPos . ')" /></td></tr>';
-		echo '<tr><td><input type="button" id="sendAllCmdsBtn" value="Send All Cmds" onClick="sendAllCmdsSubmit()" /></td></tr>';
-	}
-	
-	?>
+			$cmdType = $cmdBytesArr[0];
 		
+			$table = getCmdTable($cmdBytesArr, $cmdPos);
+		
+			//$cmdPosPrefix = "cmdPos" . str_pad($cmdPos, 3, "0", STR_PAD_LEFT);  // e.g. cmdPos001, 009, 010, etc.
+		
+			// === Display Cmd Table ===
+			echo '<tr>';
+				echo '<td>';
+			
+					// Display Cmd # & "sendOneCmd" button
+					echo '<h2>Cmd: ' . $cmdPos . ' <input type="button" id="' . $cmdPosPrefix . 'sendOneCmdBtn" value="Send Just This Cmd" onClick="sendOneCmdSubmit(' . $cmdPos . ')" /></h2>';
+			
+					// Cmd Type DD
+					echo 'Cmd Type: <select id="' . $cmdPosPrefix . 'cmdTypeDD" onChange="cmdTypeDDChanged(' . $cmdPos . ')" >';
+					$sel = ($cmdType < 0 || $cmdType > 3) ? "selected" : "";
+					echo '<option value="-1" ' . $sel . '>None</option>';
+					$sel = $cmdType == CMDTYPE_SSP ? "selected" : "";
+					echo '<option value="' . CMDTYPE_SSP . '" ' . $sel . '>Set Sequential Pixels</option>';
+					//$sel = $cmdType == 1 ? "selected" : "";
+					//echo '<option value="bcg" ' . $sel . '>Build Color Gradient</option>';
+					$sel = $cmdType == CMDTYPE_SHIFT ? "selected" : "";
+					echo '<option value="' . CMDTYPE_SHIFT . '" ' . $sel . '>Shift</option>';
+					$sel = $cmdType == CMDTYPE_FLOW ? "selected" : "";
+					echo '<option value="' . CMDTYPE_FLOW . '" ' . $sel . '>Flow</option>';
+					echo '</select>';
+		
+					// Cmd Table itself
+					echo '<div id="' . $cmdPosPrefix . 'div">';
+					echo $table;
+					echo '</div>';
+
+				echo '</td>';
+			
+				echo '<td valign="top">';
+					echo '<table border=1>';
+						echo '<tr><td>';
+							// Saved Cmds DD
+							$whereCondArrArr = "*";
+							$result = dbSelect("SingleCmd", $whereCondArrArr, "ORDER BY `cmdName` ASC");
+							$numRecords = mysql_num_rows($result);
+							echo 'Saved Cmds: <select id="' . $cmdPosPrefix . 'savedCmdsDD" onChange="savedCmdsDDChanged(' . $cmdPos . ')" >';
+							$sel = $isCmdInDB ? "" : "selected";
+							echo '<option value="-1" ' . $sel . '>- - - - -</option>';
+			
+							for ($i = 0; $i < $numRecords; $i++) {
+								$row = mysql_fetch_assoc($result);
+				
+								$cmdIdx = $row['idx'];
+								$cmdName = $row['cmdName'];
+								//$cmdBytesStr = $row['cmdBytesStr'];
+				
+								if ($cmdIdx != 1) {  // If not "Invalid"
+									$sel = $cmdIdx == $dbCmdIdx ? "selected" : "";
+									echo '<option value="' . $cmdIdx . '" ' . $sel . '>' . $cmdName . '</option>';
+								}
+							}
+							echo '</select>';
+						echo '</td></tr>';
+			
+						// Save Cmd Area.
+						echo '<tr><td>Cmd Name: <input type="text" size="40" id="' . $cmdPosPrefix . 'cmdName" value="' . $dbCmdName . '" onkeyup="ifEnterClickBtn(event, \'' . $cmdPosPrefix . 'saveCmdBtn\')" /> <input type="button" id="' . $cmdPosPrefix . 'saveCmdBtn" value="Save Cmd" onClick="saveCmdSubmit(' . $cmdPos . ')" /></td></tr>';
+						echo '<tr><td><p id="' . $cmdPosPrefix . 'saveCmdResult"></p></td></tr>';
+					echo '</table>';
+				echo '</td>';
+			echo '</tr>';
+
+			// Send ALL cmds Button
+			echo '<tr><td><input type="button" id="sendAllCmdsBtn" value="Send All Cmds" onClick="sendAllCmdsSubmit()" /></td></tr>';
+	}
+	?>	
 	</table>	
 	
 	<h3>Status Area</h3>

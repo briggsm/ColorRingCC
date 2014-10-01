@@ -18,22 +18,13 @@
 	accompanying COPYING file
 */
 
-include "siteGenFunctions.php";
+require_once("appConfig.php");
 
-if (!isset($_GET['cmdBytesStr']) || !isset($_GET['cmdPos'])) {
-	echo "<p>cmdBytes not set and/or cmdPos not set!</p>";
-	exit();
-}
+// Setup APP_ROOT
+$APP_ROOT = "/Users/briggsm/xampphtdocs/ColorRingCC";
 
-$cmdBytesStr = $_GET['cmdBytesStr'];
-$cmdPos = $_GET['cmdPos'];
-
-//echo "cmdBytesStr: " . $cmdBytesStr . "<br />";
-
-$cmdBytes = explode(",", $cmdBytesStr);
-
-$table = getCmdTable($cmdBytes, $cmdPos);
-
-echo $table;
+// Debug & Log Files
+$DEBUG_FILE = $APP_ROOT . "/DebugFile.txt";
+$LOG_FILE = $APP_ROOT . "/LogFile.txt";
 
 ?>

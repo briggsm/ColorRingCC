@@ -21,6 +21,15 @@
 var maxNumStripCmds;
 var cbArr;  // cmdByte Array
 
+// "Defines"
+const CMD_TYPE_SSP = 0;
+const CMD_TYPE_SHIFT = 2;
+const CMD_TYPE_FLOW = 3;
+
+const CMD_TYPE_STR_SSP = "ssp";
+const CMD_TYPE_STR_SHIFT = "shift";
+const CMD_TYPE_STR_FLOW = "flow";
+
 function ifEnterClickBtn(event, btnId) {
 	if (event.keyCode == 13) {
 		$("#" + btnId).click();
@@ -76,41 +85,6 @@ function colored5sSubmit() {
 		$("#result").html(data);
 	});
 }
-
-/*
-function outColored5sColorSubmit() {
-	// 0xBD => 189
-	
-	// var colorStr = "";
-	// colorStr += "0x" + $("#outColored5sColor").attr('value').substring(0,2) + ",";   // R
-	// colorStr += "0x" + $("#outColored5sColor").attr('value').substring(2,4) + ",";   // G
-	// colorStr += "0x" + $("#outColored5sColor").attr('value').substring(4,6);		  // B
-	
-
-	$.get("sendpkt2ard.php", {
-		packet: "189," + getColorStrCSV("outColored5sColor")
-	}, function (data) {
-		$("#result").html(data);
-	});
-}
-
-function inColored5sColorSubmit() {
-	// 0xBE => 190
-	
-	// var colorStr = "";
-	// colorStr += "0x" + $("#inColored5sColor").attr('value').substring(0,2) + ",";   // R
-	// colorStr += "0x" + $("#inColored5sColor").attr('value').substring(2,4) + ",";   // G
-	// colorStr += "0x" + $("#inColored5sColor").attr('value').substring(4,6);		  	// B
-	
-	//var colorStr = getColorStrCSV("inColored5sColor");
-
-	$.get("sendpkt2ard.php", {
-		packet: "190," + getColorStrCSV("inColored5sColor")
-	}, function (data) {
-		$("#result").html(data);
-	});
-}
-*/
 
 function clapSubmit() {
 	// 0xE0 => 224
@@ -175,7 +149,7 @@ function dumpEepromSmSubmit() {
 
 function sendOneCmdSubmit(cmdPos) {
 	var cmdBytesStr = getCmdBytes(cmdPos);
-	//alert ("cmdBytes: " + cmdBytes);
+	//alert ("sendOneCmdSubmit() cmdPos: " + cmdPos + ", cmdBytesStr: " + cmdBytesStr);
 	
 	if (cmdBytesStr == "") {
 		cmdBytesStr = "255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255";
@@ -201,13 +175,122 @@ function sendAllCmdsSubmit() {
 	jQuery.ajaxSetup({async:true});
 }
 
-/*
-jQuery.fn.redraw = function() {
-    return this.hide(0, function() {
-        $(this).show();
-    });
-};
-*/
+function saveCmdSubmit(cmdPos) {
+	var cmdPosPrefix = getCmdPosPrefix(cmdPos);
+	var cmdBytesStr = getCmdBytes(cmdPos);
+	
+	if (cmdBytesStr == "") {
+		cmdBytesStr = "255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255";
+		$("#" + cmdPosPrefix + "saveCmdResult").html("Cannot submit a blank/empty command.");
+		return;
+	}
+	
+	$.get("sendCmd2mysql.php", {
+		cmdName: $("#" + cmdPosPrefix + "cmdName").val(),
+		cmdBytesStr: cmdBytesStr
+	}, function (data) {
+		$("#" + cmdPosPrefix + "saveCmdResult").html(data);
+	});
+}
+
+function saveLightShowSubmit() {
+	// If a cmd already exists in DB, use it's idx for 'singleCmdIdxStr'.
+	// If a cmd is NOT already in DB, create a new cmd, and then use it's idx. (name e.g.: ssp_<timestampMS>)
+	
+	var singleCmdIdxStr = "";
+	
+	// First, iterate through all cmds, and add their 'idx' into the 'singleCmdIdxStr' (if cmd not already in SingleCmd table in DB then create it!)
+	for (var cmdPos = 0; cmdPos < maxNumStripCmds * 2; cmdPos++) {
+		var cmdPosPrefix = getCmdPosPrefix(cmdPos);
+		if ($("#" + cmdPosPrefix + "cmdTypeDD").val() == "-1") {  // "None"
+			singleCmdIdxStr += "1,";  // "Invalid" cmd (all 255's)
+			continue;  // to next for loop iteration.
+		}
+		
+		var cmdBytesStr = getCmdBytes(cmdPos);
+		
+		jQuery.ajaxSetup({async:false});
+		$.get("ajaxGetSavedCmd.php", {
+			cmdBytesStr: cmdBytesStr
+		}, function (data) {
+			try {
+				var obj = jQuery.parseJSON(data);
+				var idx = obj.idx;
+
+				if (idx != -1) {
+					// Cmd must be in DB and 'idx' is it's Index!
+					singleCmdIdxStr += idx + ",";
+				} else {
+					// Cmd not in DB, create new cmd, then use it's idx.
+					var cmdPosPrefix = getCmdPosPrefix(cmdPos);
+					var cmdType = $("#" + cmdPosPrefix + "cmdType").val();
+					var cmdTypeInt = parseInt(cmdType, 10);  // String => int
+					
+					var cmdTypeStr = "";
+					switch (cmdTypeInt) {
+					case CMD_TYPE_SSP:
+						cmdTypeStr = CMD_TYPE_STR_SSP;
+						break;
+					case CMD_TYPE_SHIFT:
+						cmdTypeStr = CMD_TYPE_STR_SHIFT;
+						break;
+					case CMD_TYPE_FLOW:
+						cmdTypeStr = CMD_TYPE_STR_FLOW;
+						break;
+					}
+					
+					var timestampMS = new Date().getTime();
+					var newCmdName = cmdTypeStr + "_" + timestampMS;  // unique name
+					
+					// Insert the new record (single cmd) in the DB (SingleCmd table)
+					$.get("sendCmd2mysql.php", {
+						cmdName: newCmdName,
+						cmdBytesStr: cmdBytesStr
+					}, function (data) {
+						try {
+							var idx = -1;
+							
+							var obj = jQuery.parseJSON(data);
+							var result = obj.result;
+							if (result > 0) {
+								idx = obj.idx;
+							}
+							
+							singleCmdIdxStr += idx + ",";
+						}  catch (err) {
+							var errInfo = "parseJSON error: " + err + ". Orig data: " + data;
+							$("#result").html(errInfo);
+						}
+					});
+				}
+			} catch (err) {
+				var errInfo = "parseJSON error: " + err + ". Orig data: " + data;
+				$("#result").html(errInfo);
+			}
+		});
+		jQuery.ajaxSetup({async:true});
+	}  // end for loop
+	
+	// Take off the last ","
+	singleCmdIdxStr = singleCmdIdxStr.substring(0, singleCmdIdxStr.length-1);
+	
+	// Finally, insert whole LightShow record into DB
+	$.get("sendLightShow2mysql.php", {
+		lightShowName: $("#lightShowName").val(),
+		singleCmdIdxStr: singleCmdIdxStr
+	}, function (data) {
+		try {
+			var obj = jQuery.parseJSON(data);
+			var statusMsg = obj.statusMsg;
+			//$("#saveLightShowResult").html(statusMsg);  // Nicer
+			$("#saveLightShowResult").html(data);  // Better for debug
+			
+		}  catch (err) {
+			var errInfo = "parseJSON error: " + err + ". Orig data: " + data;
+			$("#result").html(errInfo);
+		}
+	});
+}
 
 function useNtpServerSubmit() {
 	// 0xC0 => 192
@@ -261,19 +344,6 @@ function handPropsSubmit() {
 	});
 	
 	// Hand Colors
-	/*
-	var colorStrH = getColorStrCSV("hourHandColor");
-	var colorStrM = getColorStrCSV("minHandColor");
-	var colorStrS = getColorStrCSV("secHandColor");
-	*/
-	
-	/*
-	var colorStr = "";
-	colorStr += "0x" + $("#hourHandColor").attr('value').substring(0,2) + ",";   // R
-	colorStr += "0x" + $("#hourHandColor").attr('value').substring(2,4) + ",";   // G
-	colorStr += "0x" + $("#hourHandColor").attr('value').substring(4,6);		 // B
-	*/
-	
 	$.get("sendpkt2ard.php", {
 		packet: "197," + getColorStrCSV("hourHandColor") + "," + getColorStrCSV("minHandColor") + "," + getColorStrCSV("secHandColor")
 	}, function (data) {
@@ -347,16 +417,11 @@ function getCmdBytes(cmdPos) {
 		
 		cmdBytes += $("#" + cmdPosPrefix + "numColorsInSeries").val() + ",";
 		for (var i = 0; i < 6; i++) {
-			/*
-			cmdBytes += "0x" + $("#" + cmdPosPrefix + "colorSeriesArr" + i).attr('value').substring(0,2) + ",";  // R
-			cmdBytes += "0x" + $("#" + cmdPosPrefix + "colorSeriesArr" + i).attr('value').substring(2,4) + ",";  // G
-			cmdBytes += "0x" + $("#" + cmdPosPrefix + "colorSeriesArr" + i).attr('value').substring(4,6) + ",";  // B
-			*/
 			cmdBytes += getColorStrCSV(cmdPosPrefix + "colorSeriesArr" + i) + ",";
 		}
 		cmdBytes = cmdBytes.substring(0, cmdBytes.length-1);  // Take off the last ","
 		
-		cmdBytes = addZerosToEnd(cmdBytes);
+		cmdBytes = add255sToEnd(cmdBytes);
 		
 		break;
 	case "2":  // Shift
@@ -376,7 +441,7 @@ function getCmdBytes(cmdPos) {
 		
 		cmdBytes += getBoolBits(cmdPos) + ",";
 		
-		cmdBytes = addZerosToEnd(cmdBytes);
+		cmdBytes = add255sToEnd(cmdBytes);
 		
 		break;
 		
@@ -401,16 +466,11 @@ function getCmdBytes(cmdPos) {
 		
 		
 		for (var i = 0; i < 6; i++) {
-			/*
-			cmdBytes += "0x" + $("#" + cmdPosPrefix + "colorSeriesArr" + i).attr('value').substring(0,2) + ",";  // R
-			cmdBytes += "0x" + $("#" + cmdPosPrefix + "colorSeriesArr" + i).attr('value').substring(2,4) + ",";  // G
-			cmdBytes += "0x" + $("#" + cmdPosPrefix + "colorSeriesArr" + i).attr('value').substring(4,6) + ",";  // B
-			*/
 			cmdBytes += getColorStrCSV(cmdPosPrefix + "colorSeriesArr" + i) + ",";
 		}
 		cmdBytes = cmdBytes.substring(0, cmdBytes.length-1);  // Take off the last ","
 		
-		cmdBytes = addZerosToEnd(cmdBytes);
+		cmdBytes = add255sToEnd(cmdBytes);
 		break;
 		
 	default:
@@ -422,10 +482,10 @@ function getCmdBytes(cmdPos) {
 	return cmdBytes;
 }
 
-function addZerosToEnd(cmdBytes) {
+function add255sToEnd(cmdBytes) {
 	var numCommas = (cmdBytes.match(/,/g) || []).length;
 	while (numCommas < 31) {
-		cmdBytes += ",0";
+		cmdBytes += ",255";
 		numCommas++;
 	}
 
@@ -437,25 +497,97 @@ function pad(str, max) {
 	return str.length < max ? pad("0" + str, max) : str;
 }
 
-function cmdTypeDDChanged(dd, cmdPos) {
-	//alert ("cmdTypeDDChanged(), cmdPos: " + cmdPos);
-	
+function savedCmdsDDChanged(cmdPos) {
+	//alert('savedcmdDD');
 	var cmdPosPrefix = getCmdPosPrefix(cmdPos);
-	var cmdTypeStr = dd.value;
+	var cmdIdx = parseInt($("#" + cmdPosPrefix + "savedCmdsDD").val(), 10);
 	
-	//alert ("cmdTypeDDChanged(), cmdTypeStr: " + cmdTypeStr);
+	if (cmdIdx == -1) {
+		$("#" + cmdPosPrefix + "cmdTypeDD").val("-1");  // Change the cmdType dropdown box value. Note: doesn't trigger the 'change' event
+		$("#" + cmdPosPrefix + "cmdTypeDD").change();
+	} else {
+	
+		$.get("ajaxGetSavedCmd.php", {
+			cmdIdx: cmdIdx
+		}, function (data) {
+			try {
+				var obj = jQuery.parseJSON(data);
+			} catch (err) {
+				var errInfo = "parseJSON error: " + err + ". Orig data: " + data;
+				$("#result").html(errInfo);
+			}
+			
+			var cmdName = obj.cmdName;
+			var cmdBytesStr = obj.cmdBytesStr;
+		
+			if (cmdName != null && cmdBytesStr != null) {
+				// Fill in Cmd Name textbox
+				$("#" + cmdPosPrefix + "cmdName").val(cmdName);
+			
+				// change the cmdType dropdown (and trigger the change event)
+				var cba = cmdBytesStr.split(",");
+				var cmdType = parseInt(cba[0], 10);
+				cbArr[cmdPos][cmdType] = cmdBytesStr;
+				$("#" + cmdPosPrefix + "cmdTypeDD").val(cmdType);  // Change the cmdType dropdown box value. Note: doesn't trigger the 'change' event
+				$("#" + cmdPosPrefix + "cmdTypeDD").change();  // trigger the 'change' event
+			} else {
+				$("#result").html("Variable(s) doesn't exist... Orig data: " + data);
+			}
+		});
+	}
+}
 
-	if (cmdTypeStr == "none") {
+function savedLightShowsDDChanged() {
+	var selLightShowIdx = parseInt($("#savedLightShowsDD").val(), 10);
+	
+	$.get("ajaxGetSavedLightShow.php", {
+		lightShowIdx: selLightShowIdx
+	}, function (data) {
+		try {
+			var obj = jQuery.parseJSON(data);
+		} catch (err) {
+			var errInfo = "parseJSON error: " + err + ". Orig data: " + data;
+			$("#result").html(errInfo);
+		}
+		
+		var lightShowName = obj.lightShowName;
+		var singleCmdIdxStr = obj.singleCmdIdxStr;
+		
+		if (lightShowName != null && singleCmdIdxStr != null) {
+
+			// Fill in Cmd Name textbox
+			$("#lightShowName").val(lightShowName);
+		
+			var singleCmdIdxArr = singleCmdIdxStr.split(",");
+		
+			for (var cmdPos = 0; cmdPos < singleCmdIdxArr.length; cmdPos++) {
+				var cmdPosPrefix = getCmdPosPrefix(cmdPos);
+				var idx = singleCmdIdxArr[cmdPos];
+				if (idx != 1) {
+					// Normal cmd
+					$("#" + cmdPosPrefix + "savedCmdsDD").val(idx);
+				} else {
+					// "Invalid" cmd, so choose "None" (-1)
+					$("#" + cmdPosPrefix + "savedCmdsDD").val("-1");
+				}
+				$("#" + cmdPosPrefix + "savedCmdsDD").change();
+			}
+		} else {
+			$("#result").html("Variable(s) doesn't exist... Orig data: " + data);
+		}
+	});
+}
+
+function cmdTypeDDChanged(cmdPos) {
+	//alert ("cmdTypeDDChanged(), cmdPos: " + cmdPos);
+	var cmdPosPrefix = getCmdPosPrefix(cmdPos);
+	
+	var cmdType = parseInt($("#" + cmdPosPrefix + "cmdTypeDD").val(), 10);
+	if (cmdType == -1) {
 		$("#" + cmdPosPrefix + "div").html("");
 		return;
 	}
 
-	var cmdType = 0;	
-	if (cmdTypeStr == "ssp") { cmdType = 0; }
-	if (cmdTypeStr == "shift") { cmdType = 2; }
-	if (cmdTypeStr == "flow") { cmdType = 3; }
-	
-	
 	var cmdBytesStr = cbArr[cmdPos][cmdType];
 	
 	//alert ("cmdTypeDDChanged(), cmdPos: " + cmdPos + ", cmdType: " + cmdType + ", cmdBytesStr: " + cmdBytesStr);
@@ -494,7 +626,7 @@ function updateCbArr(cmdPos) {
 	
 	if (cmdBytesStr != "") {
 		var cmdPosPrefix = getCmdPosPrefix(cmdPos);
-		var cmdType = $("#" + cmdPosPrefix + "cmdType").val();
+		var cmdType = parseInt($("#" + cmdPosPrefix + "cmdType").val(), 10);
 		cbArr[cmdPos][cmdType] = cmdBytesStr;
 
 		//alert("updateCbArr(" + cmdPos + "), cmdType: " + cmdType + ", cmdBytesStr: " + cmdBytesStr);
@@ -596,11 +728,22 @@ function initColored5sColorPicker(id) {
 
 function getColorStrCSV(id) {
 	var colorStr = "";
+	/*
 	colorStr += "0x" + $("#" + id).attr('value').substring(0,2) + ",";   // R
 	colorStr += "0x" + $("#" + id).attr('value').substring(2,4) + ",";   // G
 	colorStr += "0x" + $("#" + id).attr('value').substring(4,6);		 // B
+	*/
+	//var hexVal = $("#" + id).attr('value').substring(0,2);   // R
+	colorStr += hexdec($("#" + id).attr('value').substring(0,2)) + ",";  // R
+	colorStr += hexdec($("#" + id).attr('value').substring(2,4)) + ",";  // G
+	colorStr += hexdec($("#" + id).attr('value').substring(4,6));		 // B
 	
 	return colorStr;
+}
+
+function hexdec(h) {
+	// Hex to Decimal
+	return parseInt(h,16);
 }
 
 // === document ready ===
