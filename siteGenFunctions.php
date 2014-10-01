@@ -34,6 +34,14 @@ define("COLOR_USAGE_HOUR_HAND", 5);
 define("COLOR_USAGE_MIN_HAND", 6);
 define("COLOR_USAGE_SEC_HAND", 7);
 
+// CmdTypes
+define("CMDTYPE_SSP", 0);
+//define("CMDTYPE_BCG", 1);
+define("CMDTYPE_SHIFT", 2);
+define("CMDTYPE_FLOW", 3);
+
+define("MAX_STRIPCMD_SIZE", 32);
+
 
 function getCmdTable ($cmdBytes, $cmdPos) {
 	// Note: assumes $cmdBytes are all in INTEGER format!
@@ -336,5 +344,64 @@ function getByteArrayFromColorRing($fnName, $fnParamsStr) {
 	
 	return $byteArray;
 }
+
+function cmdBytesArr2Str($cmdBytes) {
+	$cmdBytesStr = "";
+	for ($i = 0; $i < MAX_STRIPCMD_SIZE; $i++) {
+		$cmdBytesStr .= $cmdBytes[$i] . ",";
+	}
+	
+	$cmdBytesStr = rtrim($cmdBytesStr, ",");  // Strip off last comma
+	
+	return $cmdBytesStr;
+}
+
+function outLogFile($str) {
+	global $LOG_FILE;
+
+	$fh = fopen($LOG_FILE, 'a') or die("can't open file");
+	fwrite($fh, $str . "\n");
+	fclose($fh);
+	
+	dbgOut($str);  // Output to debug area too, if global $DEBUG is true.
+}
+
+function outDebugFile($str) {
+	global $DEBUG_FILE;
+
+	$fh = fopen($DEBUG_FILE, 'a') or die("can't open file");
+	fwrite($fh, $str . "\n");
+	fclose($fh);
+}
+
+function dbgOut($str) {
+	// Debug - prints $str to screen (or log file, in the case CRON is running this)
+	global $DEBUG;
+	global $SSH_CONNECTION;
+	global $USING_CRON_OR_PIPE;
+	
+	if ($DEBUG) {
+	
+		if ($SSH_CONNECTION) {
+			echo $str . "\n";
+		} elseif ($USING_CRON_OR_PIPE) {
+			outDebugFile($str);  // Write to file, instead of screen
+		} else {
+			// Coming from Browser - output to screen AND outDebugFile
+			//outDebugFile($str);
+			echo $str . "<br />";
+		}
+	}
+}
+
+function convertStrToUtf8($str, $fromCharset) {
+	if (stripos($fromCharset, "utf-8") !== false) { return $str; }
+	
+	if (stripos($fromCharset, "ascii") !== false) { $fromCharset = "ascii"; } // e.g. "us-ascii" => "ascii" - Outlook, and maybe others, sometimes send us-ascii (which is not a valid charset for mb_convert_encoding())
+	$str = mb_convert_encoding($str, "UTF-8", $fromCharset);
+	
+	return $str;
+}
+
 
 ?>
