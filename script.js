@@ -439,7 +439,7 @@ function getCmdBytes(cmdPos) {
 		cmdBytes += "" + ((pauseAfter & 0xFF00) >> 8) + ",";  // MSB
 		cmdBytes += "" + (pauseAfter & 0x00FF)		  + ",";  // LSB
 		
-		cmdBytes += getBoolBits(cmdPos) + ",";
+		cmdBytes += getBoolBits(cmdPos);
 		
 		cmdBytes = add255sToEnd(cmdBytes);
 		
