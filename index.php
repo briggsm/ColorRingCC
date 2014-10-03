@@ -429,6 +429,7 @@
 			echo '</td>';
 		echo '</tr>';
 		
+		// For Each CMD
 		for ($cmdPos = 0; $cmdPos < $maxNumStripCmds * 2; $cmdPos++) {
 			$cmdPosPrefix = "cmdPos" . str_pad($cmdPos, 3, "0", STR_PAD_LEFT);  // e.g. cmdPos001, 009, 010, etc.
 

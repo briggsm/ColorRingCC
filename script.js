@@ -164,13 +164,27 @@ function sendOneCmdSubmit(cmdPos) {
 }
 
 function sendAllCmdsSubmit() {
+	// 0xDC => 220
 	// 0xDD => 221
 	$("#result").html($("#result").html() + "<br />" + "Please Wait...");
 	$("#resulttable").hide().show(0); // doesn't seem to work to force refresh - in Safari at least...
 	
+	// First, clear ALL cmds
+	jQuery.ajaxSetup({async:false});
+	$.get("sendpkt2ard.php", {
+		packet: "220"
+	}, function (data) {
+		$("#result").html($("#result").html() + "<br />" + data);
+		$("#resulttable").hide().show(0); // Should force redraw, though doesn't seem to work in safari
+	});
+	jQuery.ajaxSetup({async:true});
+	
+	// Then, just send the cmds that are not "None"
 	jQuery.ajaxSetup({async:false});
 	for (var cmdPos = 0; cmdPos < maxNumStripCmds * 2; cmdPos++) {
-		sendOneCmdSubmit(cmdPos);
+		if (getCmdBytes(cmdPos) != "") {
+			sendOneCmdSubmit(cmdPos);
+		}
 	}
 	jQuery.ajaxSetup({async:true});
 }
