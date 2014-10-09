@@ -81,9 +81,9 @@
 				<th>Mode</th> <th>Speed (if Flow)</th> <th>Num Sections (if Flow)</th>
 			</tr>
 			<tr>
-				<td><input type="text" id="oecmMode" value="<?php echo getVarFromColorRing("outExternalCtrlMode"); ?>" onkeyup="ifEnterClickBtn(event, 'oecmBtn')" /></td>
-				<td><input type="text" id="oecmFlowSpeed" value="<?php echo getVarFromColorRing("outExternalCtrlModeFlowSpeed"); ?>" onkeyup="ifEnterClickBtn(event, 'oecmBtn')" /></td>
-				<td><input type="text" id="oecmFlowNumFlows" value="<?php echo getVarFromColorRing("outExternalCtrlModeFlowNumSections"); ?>" onkeyup="ifEnterClickBtn(event, 'oecmBtn')" /></td>
+				<td><input type="number" min="0" max="1" id="oecmMode" value="<?php echo getVarFromColorRing("outExternalCtrlMode"); ?>" onkeyup="ifEnterClickBtn(event, 'oecmBtn')" /></td>
+				<td><input type="number" min="0" max="255" id="oecmFlowSpeed" value="<?php echo getVarFromColorRing("outExternalCtrlModeFlowSpeed"); ?>" onkeyup="ifEnterClickBtn(event, 'oecmBtn')" /></td>
+				<td><input type="number" min="1" max="60" id="oecmFlowNumFlows" value="<?php echo getVarFromColorRing("outExternalCtrlModeFlowNumSections"); ?>" onkeyup="ifEnterClickBtn(event, 'oecmBtn')" /></td>
 				<td><input type="button" id="oecmBtn" value="Submit" onClick="oecmSubmit()" /></td>
 			</tr>
 		</table>
@@ -94,9 +94,9 @@
 				<th>Mode</th> <th>Speed (if Flow)</th> <th>Num Sections (if Flow)</th>
 			</tr>
 			<tr>
-				<td><input type="text" id="iecmMode" value="<?php echo getVarFromColorRing("inExternalCtrlMode"); ?>" onkeyup="ifEnterClickBtn(event, 'iecmBtn')" /></td>
-				<td><input type="text" id="iecmFlowSpeed" value="<?php echo getVarFromColorRing("inExternalCtrlModeFlowSpeed"); ?>" onkeyup="ifEnterClickBtn(event, 'iecmBtn')" /></td>
-				<td><input type="text" id="iecmFlowNumFlows" value="<?php echo getVarFromColorRing("inExternalCtrlModeFlowNumSections"); ?>" onkeyup="ifEnterClickBtn(event, 'iecmBtn')" /></td>
+				<td><input type="number" min="0" max="1" id="iecmMode" value="<?php echo getVarFromColorRing("inExternalCtrlMode"); ?>" onkeyup="ifEnterClickBtn(event, 'iecmBtn')" /></td>
+				<td><input type="number" min="0" max="255" id="iecmFlowSpeed" value="<?php echo getVarFromColorRing("inExternalCtrlModeFlowSpeed"); ?>" onkeyup="ifEnterClickBtn(event, 'iecmBtn')" /></td>
+				<td><input type="number" min="1" max="60" id="iecmFlowNumFlows" value="<?php echo getVarFromColorRing("inExternalCtrlModeFlowNumSections"); ?>" onkeyup="ifEnterClickBtn(event, 'iecmBtn')" /></td>
 				<td><input type="button" id="iecmBtn" value="Submit" onClick="iecmSubmit()" /></td>
 			</tr>
 		</table>
@@ -145,7 +145,7 @@
 			<table><tr>
 				<td>Time Zone Adjustment: </td>
 				<td>
-					<input type="text" maxlength="3" size="3" id="tzAdj" value="<?php echo getVarFromColorRing("tzAdj"); ?>" onkeyup="ifEnterClickBtn(event, 'tzAdjBtn')" />
+					<input type="number" min="-12" max="12" maxlength="3" size="3" id="tzAdj" value="<?php echo getVarFromColorRing("tzAdj"); ?>" onkeyup="ifEnterClickBtn(event, 'tzAdjBtn')" />
 				</td>
 				<td>(Positive or <br />Negative Integer)</td>
 				<td><input type="button" id="tzAdjBtn" value="Submit" onClick="tzAdjSubmit()" /></td>
@@ -168,9 +168,9 @@
 				$crTime = getByteArrayFromColorRing("setHackNameToTime", "");
 				?>
 				<!--td><input type="button" id="getTimeBtn" value="Get Time" onClick="getTimeSubmit()" /></td-->
-				<td><input type="text" maxlength="2" size="2" id="timeHours" value="<?php echo $crTime[0]; ?>" onkeyup="ifEnterClickBtn(event, 'setTimeBtn')" />:</td>
-				<td><input type="text" maxlength="2" size="2" id="timeMinutes" value="<?php echo $crTime[1]; ?>" onkeyup="ifEnterClickBtn(event, 'setTimeBtn')" />:</td>
-				<td><input type="text" maxlength="2" size="2" id="timeSeconds" value="<?php echo $crTime[2]; ?>" onkeyup="ifEnterClickBtn(event, 'setTimeBtn')" /></td>
+				<td><input type="number" min="0" max="23" maxlength="2" size="2" id="timeHours" value="<?php echo $crTime[0]; ?>" onkeyup="ifEnterClickBtn(event, 'setTimeBtn')" />:</td>
+				<td><input type="number" min="0" max="59" maxlength="2" size="2" id="timeMinutes" value="<?php echo $crTime[1]; ?>" onkeyup="ifEnterClickBtn(event, 'setTimeBtn')" />:</td>
+				<td><input type="number" min="0" max="59" maxlength="2" size="2" id="timeSeconds" value="<?php echo $crTime[2]; ?>" onkeyup="ifEnterClickBtn(event, 'setTimeBtn')" /></td>
 				<td><input type="button" id="setTimeBtn" value="Set Time" onClick="setTimeSubmit()" /></td>
 			</tr></table>
 		</td></tr></table>
@@ -192,7 +192,7 @@
 				<script>
 					initRealTimeColorPicker('hourHandColor', <?php echo COLOR_USAGE_HOUR_HAND; ?>);
 				</script>
-				<td><input type="text" maxlength="2" size="2" id="hourHandSize" value="<?php echo getVarFromColorRing("handSizeHour"); ?>" onkeyup="ifEnterClickBtn(event, 'handPropsBtn')" /></td>
+				<td><input type="number" min="0" max="30" maxlength="2" size="2" id="hourHandSize" value="<?php echo getVarFromColorRing("handSizeHour"); ?>" onkeyup="ifEnterClickBtn(event, 'handPropsBtn')" /></td>
 			</tr>
 			<tr>
 				<?php
@@ -204,7 +204,7 @@
 				<script>
 					initRealTimeColorPicker('minHandColor', <?php echo COLOR_USAGE_MIN_HAND; ?>);
 				</script>
-				<td><input type="text" maxlength="2" size="2" id="minHandSize" value="<?php echo getVarFromColorRing("handSizeMin"); ?>" onkeyup="ifEnterClickBtn(event, 'handPropsBtn')" /></td>
+				<td><input type="number" min="0" max="30" maxlength="2" size="2" id="minHandSize" value="<?php echo getVarFromColorRing("handSizeMin"); ?>" onkeyup="ifEnterClickBtn(event, 'handPropsBtn')" /></td>
 			</tr>
 			<tr>
 				<?php
@@ -216,7 +216,7 @@
 				<script>
 					initRealTimeColorPicker('secHandColor', <?php echo COLOR_USAGE_SEC_HAND; ?>);
 				</script>
-				<td><input type="text" maxlength="2" size="2" id="secHandSize" value="<?php echo getVarFromColorRing("handSizeSec"); ?>" onkeyup="ifEnterClickBtn(event, 'handPropsBtn')" /></td>
+				<td><input type="number" min="0" max="30" maxlength="2" size="2" id="secHandSize" value="<?php echo getVarFromColorRing("handSizeSec"); ?>" onkeyup="ifEnterClickBtn(event, 'handPropsBtn')" /></td>
 			</tr>
 			<tr>
 				<td colspan="3"><input type="button" id="handPropsBtn" value="Submit" onClick="handPropsSubmit()" />(to lock it in)</td>
@@ -342,19 +342,19 @@
 		
 		<tr>
 			<td>Amplitude Threshold [0-59]:</td>
-			<td><input type="text" id="clapAmpThreshold" value="<?php echo getVarFromColorRing("clapAmpThreshold"); ?>" onkeyup="ifEnterClickBtn(event, 'clapBtn')" /></td>
+			<td><input type="number" min="0" max="59" id="clapAmpThreshold" value="<?php echo getVarFromColorRing("clapAmpThreshold"); ?>" onkeyup="ifEnterClickBtn(event, 'clapBtn')" /></td>
 		</tr>
 		<tr>
 			<td>Minimum Delay Until Next Clap (cs) [10-255] (def: 20):</td>
-			<td><input type="text" id="clapMinDelayUntilNext" value="<?php echo getVarFromColorRing("clapMinDelayUntilNext"); ?>" onkeyup="ifEnterClickBtn(event, 'clapBtn')" /></td>
+			<td><input type="number" min="10" max="255" id="clapMinDelayUntilNext" value="<?php echo getVarFromColorRing("clapMinDelayUntilNext"); ?>" onkeyup="ifEnterClickBtn(event, 'clapBtn')" /></td>
 		</tr>
 		<tr>
 			<td>Window for Next Clap (cs) [0-255] (def: 20):</td>
-			<td><input type="text" id="clapWindowForNext" value="<?php echo getVarFromColorRing("clapWindowForNext"); ?>" onkeyup="ifEnterClickBtn(event, 'clapBtn')" /></td>
+			<td><input type="number" min="0" max="255" id="clapWindowForNext" value="<?php echo getVarFromColorRing("clapWindowForNext"); ?>" onkeyup="ifEnterClickBtn(event, 'clapBtn')" /></td>
 		</tr>
 		<tr>
 			<td>Show Time for this Number of Seconds [0-255]:</td>
-			<td><input type="text" id="clapShowTimeNumSeconds" value="<?php echo getVarFromColorRing("clapShowTimeNumSeconds"); ?>" onkeyup="ifEnterClickBtn(event, 'clapBtn')" /></td>
+			<td><input type="number" min="0" max="255" id="clapShowTimeNumSeconds" value="<?php echo getVarFromColorRing("clapShowTimeNumSeconds"); ?>" onkeyup="ifEnterClickBtn(event, 'clapBtn')" /></td>
 		</tr>
 		<tr>
 			<td></td>

@@ -109,7 +109,7 @@ function getRowStartPixelNum($cmdBytes, $cmdPos, $idx) {
 	
 	$table = "<tr>";
 	$table .= "<td>startPixelNum: </td>";
-	$table .= '<td><input type="text" id="' . getCmdPosPrefix($cmdPos) . 'startPixelNum" value="' . $cmdBytes[$idx] . '" onfocusout="updateCbArr(' . $cmdPos . ')" onkeyup="stripCmdTextInputKeyUp(' . $cmdPos . ')" /></td>';
+	$table .= '<td><input type="number" min="0" max="59" id="' . getCmdPosPrefix($cmdPos) . 'startPixelNum" value="' . $cmdBytes[$idx] . '" onfocusout="updateCbArr(' . $cmdPos . ')" onkeyup="stripCmdTextInputKeyUp(' . $cmdPos . ')" /></td>';
 	$table .= "</tr>";
 	
 	return $table;
@@ -119,7 +119,7 @@ function getRowEndPixelNum($cmdBytes, $cmdPos, $idx) {
 	
 	$table = "<tr>";
 	$table .= "<td>endPixelNum: </td>";
-	$table .= '<td><input type="text" id="' . getCmdPosPrefix($cmdPos) . 'endPixelNum" value="' . $cmdBytes[$idx] . '" onfocusout="updateCbArr(' . $cmdPos . ')" onkeyup="stripCmdTextInputKeyUp(' . $cmdPos . ')" /></td>';
+	$table .= '<td><input type="number" min="0" max="59" id="' . getCmdPosPrefix($cmdPos) . 'endPixelNum" value="' . $cmdBytes[$idx] . '" onfocusout="updateCbArr(' . $cmdPos . ')" onkeyup="stripCmdTextInputKeyUp(' . $cmdPos . ')" /></td>';
 	$table .= "</tr>";
 	
 	return $table;
@@ -153,7 +153,7 @@ function getRowNumPixelsToSkip($cmdBytes, $cmdPos, $idx) {
 
 	$table = "<tr>";
 	$table .= "<td>numPixelsToSkip: </td>";
-	$table .= '<td><input type="text" id="' . getCmdPosPrefix($cmdPos) . 'numPixelsToSkip" value="' . $cmdBytes[$idx] . '" onfocusout="updateCbArr(' . $cmdPos . ')" onkeyup="stripCmdTextInputKeyUp(' . $cmdPos . ')" /></td>';
+	$table .= '<td><input type="number" min="0" max="59" id="' . getCmdPosPrefix($cmdPos) . 'numPixelsToSkip" value="' . $cmdBytes[$idx] . '" onfocusout="updateCbArr(' . $cmdPos . ')" onkeyup="stripCmdTextInputKeyUp(' . $cmdPos . ')" /></td>';
 	$table .= "</tr>";
 	
 	return $table;
@@ -164,7 +164,7 @@ function getRowNumIter($cmdBytes, $cmdPos, $idx) {
 	$table = "<tr>";
 	$table .= "<td>numIter: </td>";
 	$word = ($cmdBytes[$idx] << 8) + $cmdBytes[$idx+1];
-	$table .= '<td><input type="text" id="' . getCmdPosPrefix($cmdPos) . 'numIter" value="' . $word . '" onfocusout="updateCbArr(' . $cmdPos . ')" onkeyup="stripCmdTextInputKeyUp(' . $cmdPos . ')" /></td>';
+	$table .= '<td><input type="number" min="0" max="65535" id="' . getCmdPosPrefix($cmdPos) . 'numIter" value="' . $word . '" onfocusout="updateCbArr(' . $cmdPos . ')" onkeyup="stripCmdTextInputKeyUp(' . $cmdPos . ')" /></td>';
 	$table .= "</tr>";
 	
 	return $table;
@@ -174,7 +174,7 @@ function getRowNumSection($cmdBytes, $cmdPos, $idx) {
 
 	$table = "<tr>";
 	$table .= "<td>numSections: </td>";
-	$table .= '<td><input type="text" id="' . getCmdPosPrefix($cmdPos) . 'numSections" value="' . $cmdBytes[$idx] . '" onfocusout="updateCbArr(' . $cmdPos . ')" onkeyup="stripCmdTextInputKeyUp(' . $cmdPos . ')" /></td>';
+	$table .= '<td><input type="number" min="1" max="60" id="' . getCmdPosPrefix($cmdPos) . 'numSections" value="' . $cmdBytes[$idx] . '" onfocusout="updateCbArr(' . $cmdPos . ')" onkeyup="stripCmdTextInputKeyUp(' . $cmdPos . ')" /></td>';
 	$table .= "</tr>";
 	
 	return $table;
@@ -184,7 +184,7 @@ function getRowNumPixelsEachColor($cmdBytes, $cmdPos, $idx) {
 
 	$table = "<tr>";
 	$table .= "<td>numPixelsEachColor: </td>";
-	$table .= '<td><input type="text" id="' . getCmdPosPrefix($cmdPos) . 'numPixelsEachColor" value="' . $cmdBytes[$idx] . '" onfocusout="updateCbArr(' . $cmdPos . ')" onkeyup="stripCmdTextInputKeyUp(' . $cmdPos . ')" /></td>';
+	$table .= '<td><input type="number" min="1" max="60" id="' . getCmdPosPrefix($cmdPos) . 'numPixelsEachColor" value="' . $cmdBytes[$idx] . '" onfocusout="updateCbArr(' . $cmdPos . ')" onkeyup="stripCmdTextInputKeyUp(' . $cmdPos . ')" /></td>';
 	$table .= "</tr>";
 	
 	return $table;
@@ -194,7 +194,7 @@ function getRowColorSeriesNumIter($cmdBytes, $cmdPos, $idx) {
 
 	$table = "<tr>";
 	$table .= "<td>colorSeriesNumIter: </td>";
-	$table .= '<td><input type="text" id="' . getCmdPosPrefix($cmdPos) . 'colorSeriesNumIter" value="' . $cmdBytes[$idx] . '" onfocusout="updateCbArr(' . $cmdPos . ')" onkeyup="stripCmdTextInputKeyUp(' . $cmdPos . ')" /></td>';
+	$table .= '<td><input type="number" min="1" max="255" id="' . getCmdPosPrefix($cmdPos) . 'colorSeriesNumIter" value="' . $cmdBytes[$idx] . '" onfocusout="updateCbArr(' . $cmdPos . ')" onkeyup="stripCmdTextInputKeyUp(' . $cmdPos . ')" /></td>';
 	$table .= "</tr>";
 
 	return $table;
@@ -204,7 +204,7 @@ function getRowNumColorsInSeries($cmdBytes, $cmdPos, $idx) {
 
 	$table = "<tr>";
 	$table .= "<td>numColorsInSeries: </td>";
-	$table .= '<td><input type="text" id="' . getCmdPosPrefix($cmdPos) . 'numColorsInSeries" value="' . $cmdBytes[$idx] . '" onfocusout="updateCbArr(' . $cmdPos . ')" onkeyup="stripCmdTextInputKeyUp(' . $cmdPos . ')" /></td>';
+	$table .= '<td><input type="number" min="1" max="6" id="' . getCmdPosPrefix($cmdPos) . 'numColorsInSeries" value="' . $cmdBytes[$idx] . '" onfocusout="updateCbArr(' . $cmdPos . ')" onkeyup="stripCmdTextInputKeyUp(' . $cmdPos . ')" /></td>';
 	$table .= "</tr>";
 	
 	return $table;
@@ -226,7 +226,7 @@ function getRowAnimDelay($cmdBytes, $cmdPos, $idx) {
 	$table = "<tr>";
 	$table .= "<td>animDelay (0-65535): </td>";
 	$word = ($cmdBytes[$idx] << 8) + $cmdBytes[$idx+1];
-	$table .= '<td><input type="text" id="' . getCmdPosPrefix($cmdPos) . 'animDelay" value="' . $word . '" onfocusout="updateCbArr(' . $cmdPos . ')" onkeyup="stripCmdTextInputKeyUp(' . $cmdPos . ')" /></td>';
+	$table .= '<td><input type="number" min="0" max="65535" id="' . getCmdPosPrefix($cmdPos) . 'animDelay" value="' . $word . '" onfocusout="updateCbArr(' . $cmdPos . ')" onkeyup="stripCmdTextInputKeyUp(' . $cmdPos . ')" /></td>';
 	$table .= "</tr>";
 	
 	return $table;
@@ -236,7 +236,7 @@ function getRowPauseAfter($cmdBytes, $cmdPos, $idx) {
 	$table = "<tr>";
 	$table .= "<td>pauseAfter (0-65535) [ms]: </td>";
 	$word = ($cmdBytes[$idx] << 8) + $cmdBytes[$idx+1];
-	$table .= '<td><input type="text" id="' . getCmdPosPrefix($cmdPos) . 'pauseAfter" value="' . $word . '" onfocusout="updateCbArr(' . $cmdPos . ')" onkeyup="stripCmdTextInputKeyUp(' . $cmdPos . ')" /></td>';
+	$table .= '<td><input type="number" min="0" max="65535" id="' . getCmdPosPrefix($cmdPos) . 'pauseAfter" value="' . $word . '" onfocusout="updateCbArr(' . $cmdPos . ')" onkeyup="stripCmdTextInputKeyUp(' . $cmdPos . ')" /></td>';
 	$table .= "</tr>";
 	
 	return $table;
