@@ -24,6 +24,6 @@ $DEBUG = true;
 $DB_HOST = "localhost";
 $DB_NAME = "colorring";
 $DB_USER = "colorring";
-$DB_PASSWORD = "colorring";
+$DB_PASSWORD = "php123PHP";
 
 ?>
